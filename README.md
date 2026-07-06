@@ -1,15 +1,15 @@
-Student Course Management and Learning Progress Tracking System
-
-Project Overview
-
+**Student Course Management and Learning Progress Tracking System
+**
+**Project Overview
+**
 The Student Course Management and Learning Progress Tracking System (SCMS) is a web-based application developed to simplify course management and learning activities. The system provides separate interfaces for students and administrators to manage courses, enrollments, and learning progress.
 
 This project is currently developed using HTML, CSS, and JavaScript as the frontend. Backend development and database integration will be implemented in the next phase.
 
-Features
-
-Student Module
-
+**Features
+**
+**Student Module
+**
 Student Login
 Student Registration
 Forgot Password
@@ -19,8 +19,8 @@ My Courses
 Progress Tracking
 Notifications
 
-Administrator Module
-
+**Administrator Module
+**
 Admin Login
 Admin Dashboard
 Manage Courses
@@ -30,8 +30,8 @@ Manage Students
 Student Details
 View Enrollments
 
-Frontend Pages
-
+**Frontend Pages
+**
 Authentication
 
 Home Page
