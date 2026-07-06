@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Manage Courses</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="css/dashboard.css">
+
+    <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- Sidebar -->
+
+    <div class="sidebar">
+
+        <h2>
+
+            <i class="fa-solid fa-user-shield"></i>
+
+            SCMS
+
+        </h2>
+
+        <p>Administrator Panel</p>
+
+        <ul>
+
+            <li>
+
+                <a href="admin-dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+            <li class="active">
+
+                <a href="manage-courses.html">
+
+                    <i class="fa-solid fa-book"></i>
+
+                    Manage Courses
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="add-course.html">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                    Add Course
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="manage-students.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    Manage Students
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="view-enrollments.html">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                    Enrollments
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="admin-login.html">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </div>
+
+    <!-- Main Content -->
+
+    <div class="main-content">
+
+        <div class="topbar">
+
+            <h1>Manage Courses</h1>
+
+            <br>
+
+            <p>
+
+                View, edit and manage all available courses.
+
+            </p>
+
+        </div>
+        <div class="course-actions">
+
+    <input type="text"
+
+    placeholder="Search by Course Name or Course Code">
+
+    <a href="add-course.html">
+
+        <button class="student-btn">
+
+            <i class="fa-solid fa-circle-plus"></i>
+
+            Add New Course
+
+        </button>
+
+    </a>
+
+</div>
+
+        <div class="course-card">
+
+            <table class="course-table">
+
+                <tr>
+
+                    <th>Course Code</th>
+
+                    <th>Course Name</th>
+
+                    <th>Category</th>
+
+                    <th>Duration</th>
+
+                    <th>Level</th>
+
+                    <th>Action</th>
+
+                </tr>
+                <tr>
+<td>AI101</td>
+<td>Artificial Intelligence</td>
+<td>Artificial Intelligence</td>
+<td>12 Weeks</td>
+<td>Beginner</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>ML102</td>
+<td>Machine Learning</td>
+<td>Artificial Intelligence</td>
+<td>10 Weeks</td>
+<td>Intermediate</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>PY103</td>
+<td>Python Programming</td>
+<td>Programming</td>
+<td>8 Weeks</td>
+<td>Beginner</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>WD104</td>
+<td>Web Development</td>
+<td>Programming</td>
+<td>10 Weeks</td>
+<td>Beginner</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>JV105</td>
+<td>Java Programming</td>
+<td>Programming</td>
+<td>10 Weeks</td>
+<td>Intermediate</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+<tr>
+<td>CP106</td>
+<td>C Programming</td>
+<td>Programming</td>
+<td>8 Weeks</td>
+<td>Beginner</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>CPP107</td>
+<td>C++ Programming</td>
+<td>Programming</td>
+<td>8 Weeks</td>
+<td>Intermediate</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>DS108</td>
+<td>Data Structures</td>
+<td>Computer Science</td>
+<td>10 Weeks</td>
+<td>Intermediate</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>DB109</td>
+<td>Database Management</td>
+<td>Database</td>
+<td>8 Weeks</td>
+<td>Beginner</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>SQL110</td>
+<td>SQL</td>
+<td>Database</td>
+<td>6 Weeks</td>
+<td>Beginner</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+<tr>
+<td>CC111</td>
+<td>Cloud Computing</td>
+<td>Cloud Computing</td>
+<td>8 Weeks</td>
+<td>Intermediate</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>CS112</td>
+<td>Cyber Security</td>
+<td>Cyber Security</td>
+<td>10 Weeks</td>
+<td>Advanced</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>DA113</td>
+<td>Data Analytics</td>
+<td>Data Science</td>
+<td>8 Weeks</td>
+<td>Intermediate</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>DL114</td>
+<td>Deep Learning</td>
+<td>Artificial Intelligence</td>
+<td>12 Weeks</td>
+<td>Advanced</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+
+<tr>
+<td>UX115</td>
+<td>UI / UX Design</td>
+<td>Design</td>
+<td>6 Weeks</td>
+<td>Beginner</td>
+<td>
+<a href="edit-course.html"><button class="edit-btn">Edit</button></a>
+<button class="delete-btn">Delete</button>
+</td>
+</tr>
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>
