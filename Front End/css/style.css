@@ -1,1 +1,629 @@
+/* ===========================
+   GOOGLE FONT & RESET
+=========================== */
 
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#F5F8FF;
+    color:#333;
+}
+
+/* ===========================
+   HERO SECTION
+=========================== */
+
+.hero{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    padding:70px 90px;
+
+}
+
+.left{
+
+    width:50%;
+
+}
+
+.left h1{
+
+    font-size:50px;
+    color:#1E3A8A;
+
+}
+
+.left h3{
+
+    margin:20px 0;
+    color:#2563EB;
+    font-size:24px;
+
+}
+
+.left p{
+
+    color:#555;
+    line-height:30px;
+    font-size:17px;
+
+}
+
+.right img{
+
+    width:480px;
+
+}
+
+/* ===========================
+   BUTTONS
+=========================== */
+
+.buttons{
+
+    margin-top:35px;
+
+}
+
+.buttons button{
+
+    padding:14px 25px;
+
+    margin-right:12px;
+
+    margin-top:10px;
+
+    border:none;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.student-btn{
+
+    background:#2563EB;
+    color:white;
+
+}
+
+.student-btn:hover{
+
+    background:#1E40AF;
+
+}
+
+.admin-btn{
+
+    background:#334155;
+    color:white;
+
+}
+
+.admin-btn:hover{
+
+    background:#1E293B;
+
+}
+
+.register-btn{
+
+    background:#10B981;
+    color:white;
+
+}
+
+.register-btn:hover{
+
+    background:#059669;
+
+}
+
+/* ===========================
+   FEATURES
+=========================== */
+
+.features{
+
+    padding:60px;
+
+    text-align:center;
+
+}
+
+.features h2{
+
+    color:#1E3A8A;
+
+    margin-bottom:40px;
+
+}
+
+.feature-container{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:30px;
+
+}
+
+.card{
+
+    width:300px;
+
+    background:white;
+
+    padding:30px;
+
+    border-radius:15px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.10);
+
+    transition:.3s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+.card h3{
+
+    color:#2563EB;
+
+    margin-bottom:15px;
+
+}
+
+/* ===========================
+   STATISTICS
+=========================== */
+
+.statistics{
+
+    background:#2563EB;
+
+    color:white;
+
+    text-align:center;
+
+    padding:60px;
+
+}
+
+.statistics h2{
+
+    margin-bottom:40px;
+
+}
+
+.stats{
+
+    display:flex;
+
+    justify-content:space-evenly;
+
+}
+
+.stats h1{
+
+    font-size:45px;
+
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+
+footer{
+
+    background:#1E3A8A;
+
+    color:white;
+
+    text-align:center;
+
+    padding:25px;
+
+}
+
+/* ===========================
+   COMMON FORM CONTAINER
+=========================== */
+
+.form-container{
+
+    width:100%;
+
+    min-height:100vh;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:#F5F8FF;
+
+    padding:40px;
+
+}
+
+/* ===========================
+   COMMON CARD
+=========================== */
+
+.form-card{
+
+    width:430px;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:15px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+
+}
+
+/* ===========================
+   FORM HEADINGS
+=========================== */
+
+.form-card h1{
+
+    text-align:center;
+
+    color:#1E3A8A;
+
+    margin-bottom:10px;
+
+}
+
+.form-card p{
+
+    text-align:center;
+
+    color:#666;
+
+    margin-bottom:25px;
+
+}
+
+/* ===========================
+   LABELS
+=========================== */
+
+label{
+
+    display:block;
+
+    margin-top:15px;
+
+    font-weight:600;
+
+}
+
+/* ===========================
+   INPUTS
+=========================== */
+
+input,
+select{
+
+    width:100%;
+
+    padding:12px;
+
+    margin-top:8px;
+
+    margin-bottom:15px;
+
+    border:1px solid #ccc;
+
+    border-radius:8px;
+
+    outline:none;
+
+    font-size:15px;
+
+}
+
+input:focus,
+select:focus{
+
+    border:1px solid #2563EB;
+
+}
+
+/* ===========================
+   CHECKBOX ROW
+=========================== */
+
+.options{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin:20px 0;
+
+    font-size:14px;
+
+}
+
+.options label{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin:0;
+
+}
+
+.options input[type="checkbox"]{
+
+    width:auto;
+
+    margin:0;
+
+}
+
+/* ===========================
+   LINKS
+=========================== */
+
+a{
+
+    text-decoration:none;
+
+    color:#2563EB;
+
+}
+
+a:hover{
+
+    text-decoration:underline;
+
+}
+
+/* ===========================
+   FORM BUTTON
+=========================== */
+
+.form-btn{
+
+    width:100%;
+
+    padding:14px;
+
+    background:#2563EB;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+}
+
+.form-btn:hover{
+
+    background:#1E40AF;
+
+}
+
+/* ===========================
+   BOTTOM TEXT
+=========================== */
+
+.bottom-text{
+
+    text-align:center;
+
+    margin-top:25px;
+
+}
+
+/* ===========================
+   ADMIN THEME
+=========================== */
+
+.admin-title{
+
+    color:#334155 !important;
+
+}
+
+.admin-btn-main{
+
+    background:#334155;
+
+}
+
+.admin-btn-main:hover{
+
+    background:#1E293B;
+
+}
+
+/* ===========================
+   REGISTER BUTTON
+=========================== */
+
+.register-main{
+
+    background:#10B981;
+
+}
+
+.register-main:hover{
+
+    background:#059669;
+
+}
+/* FORM ICON */
+
+.form-icon{
+
+    width:80px;
+    height:80px;
+
+    margin:auto;
+
+    background:#2563EB;
+
+    color:white;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:35px;
+
+    margin-bottom:20px;
+
+}
+
+label i{
+
+    color:#2563EB;
+
+    margin-right:8px;
+
+}
+/* ===========================
+   ADMIN LOGIN
+=========================== */
+
+.admin-icon{
+
+    background:#334155;
+
+}
+
+.admin-title{
+
+    color:#334155;
+
+}
+
+.admin-btn-main{
+
+    background:#334155;
+
+}
+
+.admin-btn-main:hover{
+
+    background:#1E293B;
+
+}
+.form-btn i{
+
+    margin-right:8px;
+
+}
+.stats i{
+
+    font-size:40px;
+
+    margin-bottom:15px;
+
+}
+.buttons button i{
+
+    margin-right:8px;
+
+}
+.hero{
+
+    background:linear-gradient(to right,#EEF5FF,#FFFFFF);
+
+}
+.card i{
+
+    font-size:45px;
+
+    color:#2563EB;
+
+    margin-bottom:20px;
+
+}
+/* ===========================
+   REGISTER PAGE
+=========================== */
+
+.register-card{
+
+    width:550px;
+
+}
+
+.register-icon{
+
+    background:#10B981;
+
+}
+
+.register-main{
+
+    background:#10B981;
+
+}
+
+.register-main:hover{
+
+    background:#059669;
+
+}
+/* ===========================
+   FORGOT PASSWORD
+=========================== */
+
+.forgot-icon{
+
+    background:#F59E0B;
+
+}
+
+.form-btn i{
+
+    margin-right:8px;
+
+}
