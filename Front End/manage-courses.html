@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Manage, search, edit, and delete courses in the Student Course Management System Administrator Panel.">
+
+    <title>Manage Courses</title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/dashboard.css">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+             SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <h2>
+
+            <i class="fa-solid fa-user-shield"></i>
+
+            SCMS
+
+        </h2>
+
+        <p>
+
+            Administrator Panel
+
+        </p>
+
+        <ul>
+
+            <li>
+
+                <a href="admin-dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+            <li class="active">
+
+                <a href="manage-courses.html">
+
+                    <i class="fa-solid fa-book"></i>
+
+                    Manage Courses
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="add-course.html">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                    Add Course
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="manage-students.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    Manage Students
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="view-enrollments.html">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                    Enrollments
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="admin-login.html"
+                   id="adminLogoutBtn">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <!-- =========================
+            MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+        <!-- Top Bar -->
+
+        <header class="topbar">
+
+            <h1 id="pageTitle">
+
+                Manage Courses
+
+            </h1>
+
+            <br>
+
+            <p id="pageSubtitle">
+
+                View, search, edit, and manage all available
+                courses from one place.
+
+            </p>
+
+        </header>
+
+        <!-- =========================
+             COURSE ACTIONS
+        ========================== -->
+
+        <section class="course-actions">
+
+            <input
+                type="search"
+                id="courseSearch"
+                name="courseSearch"
+                placeholder="Search by Course Name or Course Code..."
+                autocomplete="off"
+                aria-label="Search courses">
+
+            <a href="add-course.html"
+               aria-label="Add a new course">
+
+                <button
+                    type="button"
+                    class="student-btn"
+                    id="addCourseBtn">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                    Add New Course
+
+                </button>
+
+            </a>
+
+        </section>
+
+        <!-- =========================
+             COURSE TABLE
+        ========================== -->
+
+        <section class="course-card">
+
+    <table class="course-table"
+           id="courseTable">
+
+        <thead>
+
+            <tr>
+
+                <th>Course Code</th>
+
+                <th>Course Name</th>
+
+                <th>Category</th>
+
+                <th>Duration</th>
+
+                <th>Level</th>
+
+                <th>Actions</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody id="courseTableBody">
+
+        </tbody>
+
+    </table>
+
+</section>
+
+    </main>
+
+</div>
+
+<!-- =========================
+        JavaScript Files
+========================= -->
+
+<script type="module" src="js/admin.js"></script>
+
+</body>
+
+</html>

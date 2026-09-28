@@ -1,0 +1,664 @@
+/* =====================================================
+   GOOGLE FONT & GLOBAL RESET
+===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:#F5F8FF;
+    color:#333333;
+    line-height:1.6;
+}
+
+/* =====================================================
+   HERO SECTION
+===================================================== */
+
+.hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:70px 90px;
+    background:linear-gradient(to right,#EEF5FF,#FFFFFF);
+}
+
+/* =====================================================
+   HERO CONTENT
+===================================================== */
+
+.left{
+    width:50%;
+}
+
+.left h1{
+    font-size:50px;
+    color:#1E3A8A;
+}
+
+.left h3{
+    margin:20px 0;
+    font-size:24px;
+    color:#2563EB;
+}
+
+.left p{
+    font-size:17px;
+    color:#555555;
+    line-height:30px;
+}
+
+.right img{
+    width:480px;
+    max-width:100%;
+    display:block;
+}
+
+/* =====================================================
+   HOME PAGE BUTTONS
+===================================================== */
+
+.buttons{
+    margin-top:35px;
+}
+
+.buttons button{
+    padding:14px 25px;
+    margin-top:10px;
+    margin-right:12px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:600;
+    transition:all .3s ease;
+}
+
+.buttons button i{
+    margin-right:8px;
+}
+
+/* =====================================================
+   BUTTON THEMES
+===================================================== */
+
+.student-btn{
+    background:#2563EB;
+    color:#FFFFFF;
+}
+
+.student-btn:hover{
+    background:#1E40AF;
+}
+
+.admin-btn{
+    background:#334155;
+    color:#FFFFFF;
+}
+
+.admin-btn:hover{
+    background:#1E293B;
+}
+
+.register-btn{
+    background:#10B981;
+    color:#FFFFFF;
+}
+
+.register-btn:hover{
+    background:#059669;
+}
+/* =====================================================
+   FEATURES SECTION
+===================================================== */
+
+.features{
+    padding:60px;
+    text-align:center;
+}
+
+.features h2{
+    color:#1E3A8A;
+    margin-bottom:40px;
+}
+
+.feature-container{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    flex-wrap:wrap;
+}
+
+.card{
+    width:300px;
+    padding:30px;
+    background:#FFFFFF;
+    border-radius:15px;
+    box-shadow:0 8px 20px rgba(0,0,0,.10);
+    transition:all .3s ease;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.card i{
+    font-size:45px;
+    color:#2563EB;
+    margin-bottom:20px;
+}
+
+.card h3{
+    color:#2563EB;
+    margin-bottom:15px;
+}
+
+.card p{
+    color:#555555;
+    line-height:1.6;
+}
+
+/* =====================================================
+   STATISTICS SECTION
+===================================================== */
+
+.statistics{
+    background:#2563EB;
+    color:#FFFFFF;
+    text-align:center;
+    padding:60px;
+}
+
+.statistics h2{
+    margin-bottom:40px;
+}
+
+.stats{
+    display:flex;
+    justify-content:space-evenly;
+    flex-wrap:wrap;
+    gap:30px;
+}
+
+.stats i{
+    font-size:40px;
+    margin-bottom:15px;
+}
+
+.stats h1{
+    font-size:45px;
+}
+
+.stats p{
+    margin-top:8px;
+}
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+footer{
+    background:#1E3A8A;
+    color:#FFFFFF;
+    text-align:center;
+    padding:25px;
+}
+
+/* =====================================================
+   FORM CONTAINER
+===================================================== */
+
+.form-container{
+    width:100%;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+    background:#F5F8FF;
+}
+
+/* =====================================================
+   FORM CARD
+===================================================== */
+
+.form-card{
+    width:430px;
+    padding:40px;
+    background:#FFFFFF;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+}
+
+/* =====================================================
+   FORM HEADINGS
+===================================================== */
+
+.form-card h1{
+    text-align:center;
+    color:#1E3A8A;
+    margin-bottom:10px;
+}
+
+.form-card p{
+    text-align:center;
+    color:#666666;
+    margin-bottom:25px;
+}
+
+/* =====================================================
+   LABELS
+===================================================== */
+
+label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+label i{
+    color:#2563EB;
+    margin-right:8px;
+}
+
+/* =====================================================
+   INPUTS & SELECTS
+===================================================== */
+
+input,
+select{
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border:1px solid #CCCCCC;
+    border-radius:8px;
+    outline:none;
+    font-size:15px;
+    transition:all .3s ease;
+}
+
+input:focus,
+select:focus{
+    border-color:#2563EB;
+}
+
+/* =====================================================
+   LINKS
+===================================================== */
+
+a{
+    color:#2563EB;
+    text-decoration:none;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+/* =====================================================
+   FORM BUTTON
+===================================================== */
+
+.form-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    background:#2563EB;
+    color:#FFFFFF;
+    font-size:16px;
+    cursor:pointer;
+    transition:all .3s ease;
+}
+
+.form-btn:hover{
+    background:#1E40AF;
+}
+
+.form-btn i{
+    margin-right:8px;
+}
+
+/* =====================================================
+   BOTTOM TEXT
+===================================================== */
+
+.bottom-text{
+    text-align:center;
+    margin-top:25px;
+}
+/* =====================================================
+   CHECKBOX OPTIONS
+===================================================== */
+
+.options{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:20px 0;
+    font-size:14px;
+}
+
+.options label{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:0;
+}
+
+.options input[type="checkbox"]{
+    width:auto;
+    margin:0;
+}
+
+/* =====================================================
+   FORM ICONS
+===================================================== */
+
+.form-icon{
+    width:80px;
+    height:80px;
+    margin:0 auto 20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    border-radius:50%;
+    background:#2563EB;
+    color:#FFFFFF;
+    font-size:35px;
+}
+
+/* =====================================================
+   ADMIN THEME
+===================================================== */
+
+.admin-icon{
+    background:#334155;
+}
+
+.admin-title{
+    color:#334155 !important;
+}
+
+.admin-btn-main{
+    background:#334155;
+    color:#FFFFFF;
+}
+
+.admin-btn-main:hover{
+    background:#1E293B;
+}
+
+/* =====================================================
+   REGISTER THEME
+===================================================== */
+
+.register-card{
+    width:550px;
+}
+
+.register-icon{
+    background:#10B981;
+}
+
+.register-main{
+    background:#10B981;
+    color:#FFFFFF;
+}
+
+.register-main:hover{
+    background:#059669;
+}
+
+/* =====================================================
+   FORGOT PASSWORD THEME
+===================================================== */
+
+.forgot-icon{
+    background:#F59E0B;
+}
+
+/* =====================================================
+   RESPONSIVE DESIGN
+===================================================== */
+
+@media(max-width:992px){
+
+    .hero{
+        flex-direction:column;
+        text-align:center;
+        padding:60px 40px;
+    }
+
+    .left{
+        width:100%;
+        margin-bottom:40px;
+    }
+
+    .right img{
+        width:380px;
+    }
+
+    .feature-container{
+        flex-wrap:wrap;
+    }
+
+    .stats{
+        flex-wrap:wrap;
+        gap:30px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .hero{
+        padding:40px 25px;
+    }
+
+    .left h1{
+        font-size:38px;
+    }
+
+    .left h3{
+        font-size:22px;
+    }
+
+    .left p{
+        font-size:16px;
+        line-height:28px;
+    }
+
+    .right img{
+        width:100%;
+        max-width:320px;
+    }
+
+    .buttons{
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .buttons button{
+        width:100%;
+        max-width:300px;
+        margin-right:0;
+    }
+
+    .feature-container{
+        flex-direction:column;
+        align-items:center;
+    }
+
+    .card{
+        width:100%;
+        max-width:350px;
+    }
+
+    .stats{
+        flex-direction:column;
+        gap:25px;
+    }
+
+    .form-card,
+    .register-card{
+        width:100%;
+        max-width:550px;
+        padding:30px;
+    }
+
+}
+
+@media(max-width:480px){
+
+    .hero{
+        padding:30px 20px;
+    }
+
+    .left h1{
+        font-size:32px;
+    }
+
+    .left h3{
+        font-size:20px;
+    }
+
+    .form-card,
+    .register-card{
+        padding:25px;
+    }
+
+}
+/* =====================================================
+   PASSWORD BOX
+===================================================== */
+
+.password-box{
+    position:relative;
+    width:100%;
+}
+
+.password-box input{
+    width:100%;
+    padding-right:45px;
+}
+
+.password-box .toggle-password{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    color:#666666;
+    font-size:16px;
+}
+
+.password-box .toggle-password:hover{
+    color:#2563EB;
+}
+
+/* =====================================================
+   LOGIN & AUTHENTICATION PAGES
+===================================================== */
+
+.login-container{
+    min-height:100vh;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 20px;
+    background:linear-gradient(135deg,#EEF5FF,#F8FAFC);
+}
+
+.login-card{
+    width:100%;
+    max-width:460px;
+    padding:40px;
+    background:#FFFFFF;
+    border-radius:16px;
+    box-shadow:0 10px 30px rgba(0,0,0,.12);
+}
+
+.login-card h1{
+    text-align:center;
+    color:#1E3A8A;
+    margin-bottom:12px;
+    line-height:1.3;
+}
+
+.login-card > p{
+    text-align:center;
+    color:#666666;
+    margin-bottom:22px;
+}
+
+.login-card .form-group{
+    margin-bottom:8px;
+}
+
+.login-card .form-group label{
+    color:#1E3A8A;
+}
+
+.login-card input,
+.login-card select{
+    width:100%;
+    height:46px;
+    margin-bottom:8px;
+    background:#FFFFFF;
+}
+
+.login-card button{
+    width:100%;
+    min-height:46px;
+    border:none;
+    border-radius:8px;
+    padding:12px 18px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:15px;
+    margin-top:8px;
+}
+
+.login-card #studentLoginMessage,
+.login-card #adminLoginMessage,
+.login-card #forgotMessage,
+.login-card #registerMessage{
+    min-height:24px;
+    margin:8px 0;
+    text-align:center;
+}
+
+.login-card small{
+    display:block;
+    min-height:18px;
+    color:#DC2626;
+}
+
+@media(max-width:600px){
+    .login-container{
+        padding:20px 12px;
+        align-items:flex-start;
+    }
+
+    .login-card{
+        margin-top:20px;
+        padding:26px 20px;
+    }
+}
+
+/* Soft vibrant SCMS public-page palette */
+body{background:linear-gradient(135deg,#FFF9FC,#F5F2FF,#F0FFFB) !important;}
+.hero{background:linear-gradient(135deg,#F2EEFF,#FFF5F7 55%,#EDFFF9) !important;}
+.left h1{color:#5144B8 !important;}.left h3{color:#E66B82 !important;}
+.student-btn{background:linear-gradient(135deg,#7C6CF6,#9A7BFF) !important;}.student-btn:hover{background:#5D4ED0 !important;}
+.register-btn{background:linear-gradient(135deg,#70D6C2,#51BDA8) !important;}.register-btn:hover{background:#3DA58F !important;}

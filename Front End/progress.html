@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Track your learning progress and course completion in the Student Course Management System.">
+
+    <title>Learning Progress</title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/dashboard.css">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+             SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <h2>
+
+            <i class="fa-solid fa-graduation-cap"></i>
+
+            SCMS
+
+        </h2>
+
+        <p>
+
+            Student Course Management
+
+        </p>
+
+        <ul>
+
+            <li>
+
+                <a href="student-dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="courses.html">
+
+                    <i class="fa-solid fa-book"></i>
+
+                    Courses
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="my-courses.html">
+
+                    <i class="fa-solid fa-graduation-cap"></i>
+
+                    My Courses
+
+                </a>
+
+            </li>
+
+            <li class="active">
+
+                <a href="progress.html">
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    Progress
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="notifications.html">
+
+                    <i class="fa-solid fa-bell"></i>
+
+                    Notifications
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="student-login.html"
+                   id="logoutBtn">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <!-- =========================
+            MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <h1 id="pageTitle">
+
+                Learning Progress
+
+            </h1>
+
+            <br>
+
+            <p id="pageSubtitle">
+
+                Track your learning journey, completed lessons,
+                quizzes, and overall course progress.
+
+            </p>
+
+        </header>
+
+        <!-- =========================
+             PROGRESS SECTION
+        ========================== -->
+
+        <section id="progressContainer">
+
+    <article class="course-card">
+
+        <h2>
+
+            Overall Course Progress
+
+        </h2>
+
+        <br>
+
+        <div class="progress-wrapper">
+
+            <div class="progress-bar-background">
+
+                <div
+                    id="progressBar"
+                    class="progress-bar">
+                </div>
+
+            </div>
+
+            <p
+                id="progressText"
+                class="progress-text">
+
+                0% Completed
+
+            </p>
+
+        </div>
+
+        <br>
+
+        <p>
+
+            Your progress is calculated based on the
+            number of enrolled courses you have completed.
+
+        </p>
+
+    </article>
+
+</section>
+
+    </main>
+
+</div>
+
+<!-- JavaScript -->
+<script type="module" src="js/student.js"></script>
+
+</body>
+
+</html>

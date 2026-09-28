@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Manage registered students, view student details, and monitor student status in the Student Course Management System Administrator Panel.">
+
+    <title>Manage Students</title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/dashboard.css">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+             SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <h2>
+
+            <i class="fa-solid fa-user-shield"></i>
+
+            SCMS
+
+        </h2>
+
+        <p>
+
+            Administrator Panel
+
+        </p>
+
+        <ul>
+
+            <li>
+
+                <a href="admin-dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="manage-courses.html">
+
+                    <i class="fa-solid fa-book"></i>
+
+                    Manage Courses
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="add-course.html">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                    Add Course
+
+                </a>
+
+            </li>
+
+            <li class="active">
+
+                <a href="manage-students.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    Manage Students
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="view-enrollments.html">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                    Enrollments
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="admin-login.html"
+                   id="adminLogoutBtn">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <!-- =========================
+            MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+        <!-- Top Bar -->
+
+        <header class="topbar">
+
+            <h1 id="pageTitle">
+
+                Manage Students
+
+            </h1>
+
+            <br>
+
+            <p id="pageSubtitle">
+
+                View, search, and manage all registered students.
+
+            </p>
+
+        </header>
+
+        <!-- =========================
+             STUDENT ACTIONS
+        ========================== -->
+
+        <section class="course-actions">
+
+            <input
+                type="search"
+                id="studentSearch"
+                name="studentSearch"
+                placeholder="Search by Student ID or Name..."
+                autocomplete="off"
+                aria-label="Search students">
+
+            <div class="box"
+                 id="studentSummary"
+                 style="width:220px;padding:15px;">
+
+                <h3>
+
+                    Total Students
+
+                </h3>
+
+                <h2 id="totalStudents">
+
+                    250
+
+                </h2>
+
+            </div>
+
+        </section>
+
+        <!-- =========================
+             STUDENT TABLE
+        ========================== -->
+
+        <section class="course-card">
+
+            <table class="course-table"
+                   id="studentTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Student ID</th>
+
+                        <th>Name</th>
+
+                        <th>Department</th>
+
+                        <th>Year</th>
+
+                        <th>Email</th>
+
+                        <th>Status</th>
+
+                        <th>Action</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="studentTableBody">
+                                    <tr id="student-ST001">
+
+                        <td>ST001</td>
+
+                        <td>Miruthula</td>
+
+                        <td>B.Sc CS AI</td>
+
+                        <td>III</td>
+
+                        <td>miruthula@gmail.com</td>
+
+                        <td>Active</td>
+
+                        <td>
+
+                            <a href="student-details.html?studentId=ST001"
+                               aria-label="View Miruthula's details">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    data-student-id="ST001">
+
+                                    View
+
+                                </button>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    <tr id="student-ST002">
+
+                        <td>ST002</td>
+
+                        <td>Priya</td>
+
+                        <td>BCA</td>
+
+                        <td>II</td>
+
+                        <td>priya@gmail.com</td>
+
+                        <td>Active</td>
+
+                        <td>
+
+                            <a href="student-details.html?studentId=ST002"
+                               aria-label="View Priya's details">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    data-student-id="ST002">
+
+                                    View
+
+                                </button>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    <tr id="student-ST003">
+
+                        <td>ST003</td>
+
+                        <td>Kavya</td>
+
+                        <td>B.Sc IT</td>
+
+                        <td>III</td>
+
+                        <td>kavya@gmail.com</td>
+
+                        <td>Active</td>
+
+                        <td>
+
+                            <a href="student-details.html?studentId=ST003"
+                               aria-label="View Kavya's details">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    data-student-id="ST003">
+
+                                    View
+
+                                </button>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    <tr id="student-ST004">
+
+                        <td>ST004</td>
+
+                        <td>Rahul</td>
+
+                        <td>B.Com</td>
+
+                        <td>I</td>
+
+                        <td>rahul@gmail.com</td>
+
+                        <td>Inactive</td>
+
+                        <td>
+
+                            <a href="student-details.html?studentId=ST004"
+                               aria-label="View Rahul's details">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    data-student-id="ST004">
+
+                                    View
+
+                                </button>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+                                        <tr id="student-ST005">
+
+                        <td>ST005</td>
+
+                        <td>Arun</td>
+
+                        <td>BBA</td>
+
+                        <td>II</td>
+
+                        <td>arun@gmail.com</td>
+
+                        <td>Active</td>
+
+                        <td>
+
+                            <a href="student-details.html?studentId=ST005"
+                               aria-label="View Arun's details">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    data-student-id="ST005">
+
+                                    View
+
+                                </button>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    <tr id="student-ST006">
+
+                        <td>ST006</td>
+
+                        <td>Ananya</td>
+
+                        <td>B.Sc CS AI</td>
+
+                        <td>II</td>
+
+                        <td>ananya@gmail.com</td>
+
+                        <td>Active</td>
+
+                        <td>
+
+                            <a href="student-details.html?studentId=ST006"
+                               aria-label="View Ananya's details">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    data-student-id="ST006">
+
+                                    View
+
+                                </button>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    <tr id="student-ST007">
+
+                        <td>ST007</td>
+
+                        <td>Vignesh</td>
+
+                        <td>BCA</td>
+
+                        <td>III</td>
+
+                        <td>vignesh@gmail.com</td>
+
+                        <td>Active</td>
+
+                        <td>
+
+                            <a href="student-details.html?studentId=ST007"
+                               aria-label="View Vignesh's details">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    data-student-id="ST007">
+
+                                    View
+
+                                </button>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                    <tr id="student-ST008">
+
+                        <td>ST008</td>
+
+                        <td>Harini</td>
+
+                        <td>B.Sc IT</td>
+
+                        <td>I</td>
+
+                        <td>harini@gmail.com</td>
+
+                        <td>Inactive</td>
+
+                        <td>
+
+                            <a href="student-details.html?studentId=ST008"
+                               aria-label="View Harini's details">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    data-student-id="ST008">
+
+                                    View
+
+                                </button>
+
+                            </a>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- =========================
+        JavaScript Files
+========================= -->
+
+<script type="module" src="js/main.js"></script>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="View and monitor all student course enrollments in the Student Course Management System Administrator Panel.">
+
+    <title>View Enrollments</title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/dashboard.css">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+             SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <h2>
+
+            <i class="fa-solid fa-user-shield"></i>
+
+            SCMS
+
+        </h2>
+
+        <p>
+
+            Administrator Panel
+
+        </p>
+
+        <ul>
+
+            <li>
+
+                <a href="admin-dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="manage-courses.html">
+
+                    <i class="fa-solid fa-book"></i>
+
+                    Manage Courses
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="add-course.html">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                    Add Course
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="manage-students.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    Manage Students
+
+                </a>
+
+            </li>
+
+            <li class="active">
+
+                <a href="view-enrollments.html">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                    Enrollments
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="admin-login.html"
+                   id="adminLogoutBtn">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <!-- =========================
+            MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+        <!-- Top Bar -->
+
+        <header class="topbar">
+
+            <h1 id="pageTitle">
+
+                View Enrollments
+
+            </h1>
+
+            <br>
+
+            <p id="pageSubtitle">
+
+                Monitor and manage all student course enrollments.
+
+            </p>
+
+        </header>
+
+        <!-- =========================
+             ENROLLMENT ACTIONS
+        ========================== -->
+
+        <section class="course-actions">
+
+            <input
+                type="search"
+                id="enrollmentSearch"
+                name="enrollmentSearch"
+                placeholder="Search by Student ID, Student Name, or Course..."
+                autocomplete="off"
+                aria-label="Search enrollments">
+
+            <div class="box"
+                 id="enrollmentSummary"
+                 style="width:220px;padding:15px;">
+
+                <h3>
+
+                    Total Enrollments
+
+                </h3>
+
+                <h2 id="totalEnrollments">
+
+                    180
+
+                </h2>
+
+            </div>
+
+        </section>
+
+        <!-- =========================
+             ENROLLMENT TABLE
+        ========================== -->
+
+        <section class="course-card">
+
+            <table class="course-table"
+                   id="enrollmentTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Student ID</th>
+
+                        <th>Student Name</th>
+
+                        <th>Course</th>
+
+                        <th>Enrollment Date</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="enrollmentTableBody">
+
+</tbody>
+
+            </table>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- =========================
+        JavaScript Files
+========================= -->
+
+<script type="module" src="js/main.js"></script>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+
+</html>

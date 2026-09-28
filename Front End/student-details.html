@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="View complete student details, enrolled courses, progress, and activities in the Student Course Management System Administrator Panel.">
+
+    <title>Student Details</title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/dashboard.css">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+             SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <h2>
+
+            <i class="fa-solid fa-user-shield"></i>
+
+            SCMS
+
+        </h2>
+
+        <p>
+
+            Administrator Panel
+
+        </p>
+
+        <ul>
+
+            <li>
+
+                <a href="admin-dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="manage-courses.html">
+
+                    <i class="fa-solid fa-book"></i>
+
+                    Manage Courses
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="add-course.html">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                    Add Course
+
+                </a>
+
+            </li>
+
+            <li class="active">
+
+                <a href="manage-students.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    Manage Students
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="view-enrollments.html">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                    Enrollments
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="admin-login.html"
+                   id="adminLogoutBtn">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <!-- =========================
+            MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+        <!-- Top Bar -->
+
+        <header class="topbar">
+
+            <h1 id="pageTitle">
+
+                Student Details
+
+            </h1>
+
+            <br>
+
+            <p id="pageSubtitle">
+
+                Complete information about the selected student.
+
+            </p>
+
+        </header>
+
+        <!-- =========================
+             STUDENT STATISTICS
+        ========================== -->
+
+        <section class="cards">
+
+            <article class="box">
+
+                <i class="fa-solid fa-book-open"></i>
+
+                <h2 id="enrolledCourseCount">
+
+                    2
+
+                </h2>
+
+                <p>
+
+                    Enrolled Courses
+
+                </p>
+
+            </article>
+
+            <article class="box">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                <h2 id="completedCourseCount">
+
+                    1
+
+                </h2>
+
+                <p>
+
+                    Completed
+
+                </p>
+
+            </article>
+
+            <article class="box">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                <h2 id="inProgressCourseCount">
+
+                    1
+
+                </h2>
+
+                <p>
+
+                    In Progress
+
+                </p>
+
+            </article>
+
+            <article class="box">
+
+                <i class="fa-solid fa-award"></i>
+
+                <h2 id="certificateCount">
+
+                    0
+
+                </h2>
+
+                <p>
+
+                    Certificates
+
+                </p>
+
+            </article>
+
+        </section>
+
+        <!-- =========================
+             STUDENT PROFILE
+        ========================== -->
+
+        <section class="course-card">
+
+            <h2>
+
+                Student Profile
+
+            </h2>
+
+            <br>
+
+            <!-- Hidden Student ID -->
+
+            <input
+                type="hidden"
+                id="studentId"
+                name="studentId"
+                value="ST001">
+
+            <p>
+
+                <strong>Student ID :</strong>
+
+                <span id="studentCode">
+
+                    ST001
+
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>Name :</strong>
+
+                <span id="studentName">
+
+                    Miruthula
+
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>Email :</strong>
+
+                <span id="studentEmail">
+
+                    miruthula@gmail.com
+
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>Department :</strong>
+
+                <span id="studentDepartment">
+
+                    B.Sc Computer Science with AI
+
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>Year :</strong>
+
+                <span id="studentYear">
+
+                    III
+
+                </span>
+
+            </p>
+
+            <p>
+
+                <strong>Status :</strong>
+
+                <span id="studentStatus">
+
+                    Active
+
+                </span>
+
+            </p>
+
+        </section>
+                <!-- =========================
+             ENROLLED COURSES
+        ========================== -->
+
+        <section class="course-card">
+
+            <h2>
+
+                Enrolled Courses
+
+            </h2>
+
+            <br>
+
+            <table
+                class="course-table"
+                id="enrolledCoursesTable">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Course Code</th>
+
+                        <th>Course Name</th>
+
+                        <th>Progress</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="enrolledCoursesBody">
+</tbody>
+            </table>
+
+        </section>
+
+        <br>
+
+        <!-- =========================
+             CERTIFICATES
+        ========================== -->
+
+        <section class="course-card">
+
+            <h2>
+
+                Certificates
+
+            </h2>
+
+            <br>
+
+            <div id="certificateSection">
+
+                <p id="certificateMessage">
+
+                    No certificates earned yet.
+
+                </p>
+
+            </div>
+
+        </section>
+
+        <br>
+
+        <!-- Back Button -->
+
+        <a href="manage-students.html"
+           aria-label="Back to Manage Students">
+
+            <button
+                type="button"
+                class="student-btn"
+                id="backToStudentsBtn">
+
+                <i class="fa-solid fa-arrow-left"></i>
+
+                Back to Students
+
+            </button>
+
+        </a>
+
+    </main>
+
+</div>
+
+<!-- =========================
+        JavaScript Files
+========================= -->
+
+<script type="module" src="js/main.js"></script>
+
+<script type="module" src="js/admin.js"></script>
+</body>
+
+</html>

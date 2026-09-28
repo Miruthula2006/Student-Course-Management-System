@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Administrator Dashboard for managing students, courses, enrollments, and system activities in the Student Course Management System.">
+
+    <title>Admin Dashboard</title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <link rel="stylesheet"
+          href="css/dashboard.css">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- =========================
+             SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <h2>
+
+            <i class="fa-solid fa-user-shield"></i>
+
+            SCMS
+
+        </h2>
+
+        <p>
+
+            Administrator Panel
+
+        </p>
+
+        <ul>
+
+            <li class="active">
+
+                <a href="admin-dashboard.html">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="manage-courses.html">
+
+                    <i class="fa-solid fa-book"></i>
+
+                    Manage Courses
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="add-course.html">
+
+                    <i class="fa-solid fa-circle-plus"></i>
+
+                    Add Course
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="manage-students.html">
+
+                    <i class="fa-solid fa-users"></i>
+
+                    Manage Students
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="view-enrollments.html">
+
+                    <i class="fa-solid fa-user-check"></i>
+
+                    Enrollments
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="admin-login.html"
+                   id="adminLogoutBtn">
+
+                    <i class="fa-solid fa-right-from-bracket"></i>
+
+                    Logout
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </aside>
+
+    <!-- =========================
+            MAIN CONTENT
+    ========================== -->
+
+    <main class="main-content">
+
+        <!-- Top Bar -->
+
+        <header class="topbar">
+
+            <h1 id="pageTitle">
+
+                Admin Dashboard
+
+            </h1>
+
+            <br>
+
+            <p id="pageSubtitle">
+
+                Welcome back! Manage students, courses,
+                enrollments, and monitor system activities
+                from one place.
+
+            </p>
+
+        </header>
+
+        <!-- =========================
+             WELCOME SECTION
+        ========================== -->
+
+        <section class="welcome-card">
+
+            <h2>
+
+                Welcome,
+
+                <span id="adminName">
+
+                    Administrator
+
+                </span>
+
+                👋
+
+            </h2>
+
+            <br>
+
+            <p>
+
+                This dashboard provides complete control over
+                the Student Course Management System. Manage
+                courses, students, enrollments, notifications,
+                and monitor platform activity efficiently.
+
+            </p>
+
+        </section>
+
+        <!-- =========================
+             DASHBOARD STATISTICS
+        ========================== -->
+
+        <section class="cards">
+
+            <div class="box">
+
+                <i class="fa-solid fa-users"></i>
+
+                <h2 id="totalStudents">
+
+                    0
+
+                </h2>
+
+                <p>
+
+                    Total Students
+
+                </p>
+
+            </div>
+
+            <div class="box">
+
+                <i class="fa-solid fa-book"></i>
+
+                <h2 id="totalCourses">
+
+                    15
+
+                </h2>
+
+                <p>
+
+                    Total Courses
+
+                </p>
+
+            </div>
+
+            <div class="box">
+
+                <i class="fa-solid fa-user-check"></i>
+
+                <h2 id="totalEnrollments">
+
+                    0
+
+                </h2>
+
+                <p>
+
+                    Total Enrollments
+
+                </p>
+
+            </div>
+                        <div class="box">
+
+                <i class="fa-solid fa-chart-column"></i>
+
+                <h2 id="activeCourses">
+
+                    0
+
+                </h2>
+
+                <p>
+
+                    Active Courses
+
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- =========================
+             RECENT ACTIVITY
+        ========================== -->
+
+        <section class="recent">
+
+            <h2>
+
+                Recent Activity
+
+            </h2>
+
+            <br>
+
+            <div id="recentActivityList">
+
+                <p>
+
+                    No recent activity available.
+
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<!-- =========================
+        JavaScript Files
+========================= -->
+
+<script type="module" src="js/admin.js"></script>
+
+</body>
+
+</html>

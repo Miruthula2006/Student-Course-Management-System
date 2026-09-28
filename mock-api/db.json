@@ -1,0 +1,50 @@
+{
+  "courses": [
+    {
+      "id": "1",
+      "courseName": "Python Programming",
+      "courseCode": "CS101",
+      "instructor": "Dr. Anu",
+      "duration": "8 Weeks",
+      "level": "Beginner",
+      "category": "Programming",
+      "status": "Active",
+      "overview": "Learn Python programming from beginner to advanced level.",
+      "videoUrl": "",
+      "pdfUrl": "",
+      "practiceUrl": "",
+      "materials": []
+    },
+    {
+      "id": "3",
+      "courseName": "Artificial Intelligence",
+      "courseCode": "AI101",
+      "instructor": "Dr. Priya",
+      "duration": "12 Weeks",
+      "level": "Advanced",
+      "category": "Artificial Intelligence",
+      "status": "Active",
+      "overview": "Learn the fundamentals of Artificial Intelligence.",
+      "videoUrl": "",
+      "pdfUrl": "",
+      "practiceUrl": "",
+      "materials": []
+    },
+    {
+      "id": "F7i0L2cL-MI",
+      "courseName": "Data Structures",
+      "courseCode": "CS201",
+      "instructor": "Dr. Madhi",
+      "duration": "10 Weeks",
+      "level": "Beginner",
+      "category": "Programming",
+      "status": "Active",
+      "overview": "Learn data structures and algorithms",
+      "videoUrl": "",
+      "pdfUrl": "",
+      "practiceUrl": "",
+      "materials": []
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
