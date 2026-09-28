@@ -4,9 +4,7 @@ A web-based Student Course Management System developed as a Full Stack Web Devel
 
 The project started with a traditional HTML, CSS, and JavaScript implementation and was later converted into a React-based application with a Mock REST API for course management.
 
----
-
-## 📌 Project Overview
+##  Project Overview
 
 The Student Course Management System (SCMS) provides separate interfaces for students and administrators.
 
@@ -37,9 +35,8 @@ The Student Course Management System (SCMS) provides separate interfaces for stu
 - View enrollments
 - Manage course learning resources
 
----
 
-## 🛠️ Technologies Used
+##  Technologies Used
 
 ### Frontend - Initial Version
 
@@ -64,9 +61,8 @@ The Student Course Management System (SCMS) provides separate interfaces for stu
 - REST API
 - Axios
 
----
 
-## 📂 Project Structure
+##  Project Structure
 
 ```text
 Student-Course-Management-System/
