@@ -1,3 +1,4 @@
+
 import {
   createContext,
   useContext,
@@ -10,33 +11,23 @@ import api from "../services/api";
 const CourseContext = createContext(null);
 
 export function CourseProvider({ children }) {
-
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   async function fetchCourses() {
-
     try {
-
       setLoading(true);
 
-      const response = await api.get("/courses");
+      const response = await api.get("/api/courses");
 
-      setCourses(response.data);
-
+      setCourses(response.data.data);
       setError(null);
-
     } catch (error) {
-
       console.error("Failed to fetch courses:", error);
-
       setError("Unable to load courses.");
-
     } finally {
-
       setLoading(false);
-
     }
   }
 
@@ -45,34 +36,34 @@ export function CourseProvider({ children }) {
   }, []);
 
   async function addCourse(course) {
-
-    const response = await api.post("/courses", course);
+    const response = await api.post(
+      "/api/courses",
+      course
+    );
 
     setCourses((previousCourses) => [
       ...previousCourses,
-      response.data
+      response.data.data
     ]);
   }
 
   async function updateCourse(id, updatedCourse) {
-
     const response = await api.put(
-      `/courses/${id}`,
+      `/api/courses/${id}`,
       updatedCourse
     );
 
     setCourses((previousCourses) =>
       previousCourses.map((course) =>
         course.id === id
-          ? response.data
+          ? response.data.data
           : course
       )
     );
   }
 
   async function deleteCourse(id) {
-
-    await api.delete(`/courses/${id}`);
+    await api.delete(`/api/courses/${id}`);
 
     setCourses((previousCourses) =>
       previousCourses.filter(
