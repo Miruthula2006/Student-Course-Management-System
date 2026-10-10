@@ -1,3 +1,5 @@
+const notFound = require("./middleware/notFoundMiddleware");
+const errorHandler = require("./middleware/errorMiddleware");
 const courseRoutes = require("./routes/courseRoutes");
 const express = require("express");
 const cors = require("cors");
@@ -31,6 +33,8 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/courses", courseRoutes);
+app.use(notFound);
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;
