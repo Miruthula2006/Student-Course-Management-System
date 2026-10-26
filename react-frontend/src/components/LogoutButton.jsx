@@ -11,6 +11,7 @@ const LogoutButton = ({ admin = false }) => {
         }
 
         localStorage.removeItem("loggedInUser");
+        sessionStorage.removeItem("token");
         window.dispatchEvent(new Event("authChanged"));
         navigate("/", { replace: true });
     };

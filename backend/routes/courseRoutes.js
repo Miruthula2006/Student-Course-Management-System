@@ -8,23 +8,19 @@ const {
   editCourse,
   removeCourse
 } = require("../controllers/courseController");
+
 const validateCourse = require("../middleware/courseValidation");
+const authenticateToken = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// GET all courses
+// Public routes: no token required
 router.get("/", getCourses);
-
-// GET one course
 router.get("/:id", getCourse);
 
-// CREATE a course
-router.post("/", validateCourse, addCourse);
-
-// UPDATE a course
-router.put("/:id", editCourse);
-
-// DELETE a course
-router.delete("/:id", removeCourse);
+// Protected routes: valid JWT required
+router.post("/", authenticateToken, validateCourse, addCourse);
+router.put("/:id", authenticateToken, editCourse);
+router.delete("/:id", authenticateToken, removeCourse);
 
 module.exports = router;

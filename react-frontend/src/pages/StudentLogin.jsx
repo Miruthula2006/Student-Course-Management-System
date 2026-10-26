@@ -26,14 +26,16 @@ const StudentLogin = () => {
       });
 
       const student = response.data.data;
+        const token = response.data.token;
 
-      login({
+        login({
         id: student.id,
         name: student.name,
         email: student.email,
         department: student.department,
-        role: "student"
-      });
+        role: "student",
+        token
+        });
 
       setMessage("Login successful!");
       navigate("/student-dashboard");

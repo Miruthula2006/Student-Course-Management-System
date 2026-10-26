@@ -56,8 +56,12 @@ function logoutUser(event){
 
     }
 
+    
     localStorage.removeItem("loggedInUser");
+    sessionStorage.removeItem("token");
+
     window.dispatchEvent(new Event("authChanged"));
+
 
     window.history.pushState(
         {},
