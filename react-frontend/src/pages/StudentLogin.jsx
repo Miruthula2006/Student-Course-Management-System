@@ -1,94 +1,120 @@
-import LegacyScript from "../components/LegacyScript.jsx";
+
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import PageCss from "../components/PageCss.jsx";
-import { Link } from "react-router-dom";
+import api from "../services/api";
+import { useAuth } from "../auth/AuthContext.jsx";
 
 const StudentLogin = () => {
-    return (
-        <>
-            <PageCss href="/css/style.css" />
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-            <main className="login-container">
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-                <section className="login-card">
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setMessage("");
+    setLoading(true);
 
-                    <h1>
-                        Student Login
-                    </h1>
+    try {
+      const response = await api.post("/api/v1/auth/login", {
+        email,
+        password
+      });
 
-                    <p>
-                        Login to access your Student Course Management System.
-                    </p>
+      const student = response.data.data;
 
-                    <form id="studentLoginForm">
+      login({
+        id: student.id,
+        name: student.name,
+        email: student.email,
+        department: student.department,
+        role: "student"
+      });
 
-                        <div className="form-group">
+      setMessage("Login successful!");
+      navigate("/student-dashboard");
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message ||
+          "Unable to log in. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
-                            <label htmlFor="studentEmail">
-                                Email
-                            </label>
+  return (
+    <>
+      <PageCss href="/css/style.css" />
 
-                            <input
-                                type="email"
-                                id="studentEmail"
-                                name="studentEmail"
-                                placeholder="Enter your email"
-                                autoComplete="email"
-                            />
+      <main className="login-container">
+        <section className="login-card">
+          <h1>Student Login</h1>
 
-                        </div>
+          <p>
+            Login to access your Student Course Management System.
+          </p>
 
-                        <div className="form-group">
+          <form id="studentLoginForm" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="studentEmail">Email</label>
+              <input
+                type="email"
+                id="studentEmail"
+                name="studentEmail"
+                placeholder="Enter your email"
+                autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+              />
+            </div>
 
-                            <label htmlFor="studentPassword">
-                                Password
-                            </label>
+            <div className="form-group">
+              <label htmlFor="studentPassword">Password</label>
+              <input
+                type="password"
+                id="studentPassword"
+                name="studentPassword"
+                placeholder="Enter your password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+              />
+            </div>
 
-                            <input
-                                type="password"
-                                id="studentPassword"
-                                name="studentPassword"
-                                placeholder="Enter your password"
-                                autoComplete="current-password"
-                            />
+            <p id="studentLoginMessage" role="status">
+              {message}
+            </p>
 
-                        </div>
+            <button
+              type="submit"
+              id="studentLoginBtn"
+              className="student-btn"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </button>
+          </form>
 
-                        <p id="studentLoginMessage"></p>
+          <p>
+            <Link to="/forgot-password">Forgot Password?</Link>
+          </p>
 
-                        <button
-                            type="submit"
-                            id="studentLoginBtn"
-                            className="student-btn"
-                        >
-                            Login
-                        </button>
+          <p>
+            Don't have an account? <Link to="/register">Register</Link>
+          </p>
 
-                    </form>
-
-                    <p>
-                        <Link to="/forgot-password">
-                            Forgot Password?
-                        </Link>
-                    </p>
-
-                    <p>
-                        Don't have an account?{" "}
-                        <Link to="/register">
-                            Register
-                        </Link>
-                    </p>
-
-                    <Link to="/">
-                        Back to Home
-                    </Link>
-
-                </section>
-
-            </main>
-            <LegacyScript src="/legacy/js/main.js" module />
-<LegacyScript src="/legacy/js/auth.js" module />
-        </>
-    );
+          <Link to="/">Back to Home</Link>
+        </section>
+      </main>
+    </>
+  );
 };
 
 export default StudentLogin;

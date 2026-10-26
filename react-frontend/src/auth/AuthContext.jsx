@@ -79,35 +79,37 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
 
-    const login = (userData) => {
+    
+const login = (userData) => {
+    const { token, ...user } = userData;
 
-        localStorage.setItem(
-            "loggedInUser",
-            JSON.stringify(userData)
-        );
+    localStorage.setItem(
+        "loggedInUser",
+        JSON.stringify(user)
+    );
 
-        setUser(userData);
+    if (token) {
+        sessionStorage.setItem("token", token);
+    }
 
-        window.dispatchEvent(
-            new Event("authChanged")
-        );
+    setUser(user);
 
-    };
+    window.dispatchEvent(
+        new Event("authChanged")
+    );
+};
 
+const logout = () => {
+    localStorage.removeItem("loggedInUser");
+    sessionStorage.removeItem("token");
 
-    const logout = () => {
+    setUser(null);
 
-        localStorage.removeItem(
-            "loggedInUser"
-        );
+    window.dispatchEvent(
+        new Event("authChanged")
+    );
+};
 
-        setUser(null);
-
-        window.dispatchEvent(
-            new Event("authChanged")
-        );
-
-    };
 
 
     return (

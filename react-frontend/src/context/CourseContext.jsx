@@ -19,7 +19,7 @@ export function CourseProvider({ children }) {
     try {
       setLoading(true);
 
-      const response = await api.get("/api/courses");
+      const response = await api.get("/api/v1/courses");
 
       setCourses(response.data.data);
       setError(null);
@@ -37,7 +37,7 @@ export function CourseProvider({ children }) {
 
   async function addCourse(course) {
     const response = await api.post(
-      "/api/courses",
+      "/api/v1/courses",
       course
     );
 
@@ -49,7 +49,7 @@ export function CourseProvider({ children }) {
 
   async function updateCourse(id, updatedCourse) {
     const response = await api.put(
-      `/api/courses/${id}`,
+      `/api/v1/courses/${id}`,
       updatedCourse
     );
 
@@ -63,7 +63,7 @@ export function CourseProvider({ children }) {
   }
 
   async function deleteCourse(id) {
-    await api.delete(`/api/courses/${id}`);
+    await api.delete(`/api/v1/courses/${id}`);
 
     setCourses((previousCourses) =>
       previousCourses.filter(
