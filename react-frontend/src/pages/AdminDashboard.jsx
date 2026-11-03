@@ -1,66 +1,37 @@
 import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext.jsx";
+import { useAuth } from "../auth/useAuth.js";
 import LogoutButton from "../components/LogoutButton.jsx";
 import { useCourses } from "../context/CourseContext.jsx";
+import api from "../services/api.js";
 
 const AdminDashboard = () => {
     const { user } = useAuth();
 
-    const {
-        courses,
-        loading,
-        error,
-        fetchCourses
-    } = useCourses();
+    const { courses, loading, error } = useCourses();
 
     const [totalStudents, setTotalStudents] = useState(0);
     const [totalEnrollments, setTotalEnrollments] = useState(0);
     const [recentActivity, setRecentActivity] = useState([]);
 
     useEffect(() => {
-        fetchCourses();
-    }, [user]);
-
-    useEffect(() => {
-        const students =
-            JSON.parse(localStorage.getItem("students")) || [];
-
-        setTotalStudents(students.length);
-
-        const enrollments = students.reduce((total, student) => {
-            if (Array.isArray(student.enrollments)) {
-                return total + student.enrollments.length;
-            }
-
-            if (Array.isArray(student.enrolledCourses)) {
-                return total + student.enrolledCourses.length;
-            }
-
-            return total;
-        }, 0);
-
-        setTotalEnrollments(enrollments);
-
-        const activities = [];
-
-        students.forEach((student) => {
-            if (Array.isArray(student.enrollments)) {
-                student.enrollments.forEach((enrollment) => {
-                    activities.push({
-                        type: "Enrollment",
-                        student: student.name || student.email,
-                        course: enrollment.courseId,
-                        date: enrollment.enrollmentDate || ""
-                    });
-                });
-            }
-        });
-
-        setRecentActivity(
-            activities.slice(-5).reverse()
-        );
+        let active = true;
+        Promise.all([api.get("/api/v1/students"), api.get("/api/v1/enrollments")])
+            .then(([studentResponse, enrollmentResponse]) => {
+                if (!active) return;
+                const enrollments = enrollmentResponse.data.enrollments || [];
+                setTotalStudents((studentResponse.data.students || []).length);
+                setTotalEnrollments(enrollments.length);
+                setRecentActivity(enrollments.slice(0, 5).map((enrollment) => ({
+                    type: "Enrollment",
+                    student: enrollment.student?.name || "Student",
+                    course: enrollment.course?.courseName || "Course",
+                    date: enrollment.enrolledAt ? new Date(enrollment.enrolledAt).toLocaleDateString() : ""
+                })));
+            })
+            .catch((requestError) => console.error("Unable to load dashboard data:", requestError));
+        return () => { active = false; };
     }, [user]);
 
     const totalCourses = courses.length;

@@ -5,7 +5,7 @@ const CourseCard = ({ course, onEnroll }) => {
         <div className="course-card scms-course-card">
             <div className="course-card-badge">{course.category}</div>
             <h3>{course.title}</h3>
-            <p><strong>Course Code:</strong> {course.id}</p>
+            <p><strong>Course Code:</strong> {course.courseCode || course.id}</p>
             <p><strong>Duration:</strong> {course.duration}</p>
             <p><strong>Level:</strong> {course.level}</p>
             <p>{course.description}</p>

@@ -24,12 +24,21 @@ async function login(req, res, next) {
   try {
     const student = await loginStudent(req.body);
 
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not configured");
+    }
+
+    const expiresIn = process.env.JWT_EXPIRES_IN || "1h";
+
     const token = jwt.sign(
-      { email: student.email },
+      {
+        email: student.email,
+        role: student.role
+      },
       process.env.JWT_SECRET,
       {
         subject: student.id,
-        expiresIn: process.env.JWT_EXPIRES_IN || "1h"
+        expiresIn
       }
     );
 
@@ -38,7 +47,7 @@ async function login(req, res, next) {
       message: "Login successful",
       token,
       tokenType: "Bearer",
-      expiresIn: process.env.JWT_EXPIRES_IN || "1h",
+      expiresIn,
       data: student
     });
   } catch (error) {

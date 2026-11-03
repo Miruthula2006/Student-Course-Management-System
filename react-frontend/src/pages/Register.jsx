@@ -39,10 +39,10 @@ const Register = () => {
     }
 
     if (
-      form.registerPassword.length < 8 ||
+      form.registerPassword.length < 12 ||
       form.registerPassword.length > 72
     ) {
-      setMessage("Password must be between 8 and 72 characters.");
+      setMessage("Password must be between 12 and 72 characters.");
       return;
     }
 
@@ -50,11 +50,14 @@ const Register = () => {
 
     try {
       await api.post("/api/v1/auth/register", {
-        name: form.fullName,
-        email: form.registerEmail,
-        password: form.registerPassword,
-        department: form.department
-      });
+  name: form.fullName,
+  registerNumber: form.registerNumber,
+  email: form.registerEmail,
+  phone: form.phone,
+  department: form.department,
+  year: form.year,
+  password: form.registerPassword
+});
 
       setMessage("Registration successful! Redirecting to login...");
 

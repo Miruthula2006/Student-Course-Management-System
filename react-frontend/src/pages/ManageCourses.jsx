@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext.jsx";
+import { useAuth } from "../auth/useAuth.js";
 import LogoutButton from "../components/LogoutButton.jsx";
 import { useCourses } from "../context/CourseContext.jsx";
 

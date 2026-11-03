@@ -2,49 +2,40 @@ import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import LogoutButton from "../components/LogoutButton.jsx";
+import api from "../services/api.js";
 
 const ManageStudents = () => {
     const navigate = useNavigate();
 
     const [students, setStudents] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        const storedStudents =
-            JSON.parse(localStorage.getItem("students")) || [];
-
-        setStudents(storedStudents);
+        api.get("/api/v1/students")
+            .then((response) => setStudents(response.data.students || []))
+            .catch((requestError) => setError(
+                requestError.response?.data?.message || "Unable to load students."
+            ));
     }, []);
 
-    const handleDelete = (student) => {
-        const studentId = student.id || student.studentId;
+    const handleDelete = async (student) => {
+        const studentId = student.id || student._id || student.studentId;
         const studentName = student.name || student.fullName || "this student";
 
-        if (!window.confirm(`Delete ${studentName}? This will remove the student and their enrollment, progress, and certificate data from this browser.`)) {
+        if (!window.confirm(`Delete ${studentName}?`)) {
             return;
         }
 
-        const updatedStudents = students.filter(
-            (item) => String(item.id || item.studentId) !== String(studentId)
-        );
-
-        localStorage.setItem("students", JSON.stringify(updatedStudents));
-
-        const loggedInUser = JSON.parse(
-            localStorage.getItem("loggedInUser") || "null"
-        );
-
-        if (
-            loggedInUser &&
-            String(loggedInUser.id || loggedInUser.studentId) === String(studentId)
-        ) {
-            localStorage.removeItem("loggedInUser");
-            window.dispatchEvent(new Event("authChanged"));
+        try {
+            await api.delete(`/api/v1/students/${encodeURIComponent(studentId)}`);
+            setStudents((current) => current.filter(
+                (item) => String(item.id || item._id || item.studentId) !== String(studentId)
+            ));
+            setError("");
+        } catch (requestError) {
+            setError(requestError.response?.data?.message || "Unable to delete student.");
         }
-
-        setStudents(updatedStudents);
-        window.dispatchEvent(new Event("studentDataChanged"));
-        alert("Student deleted successfully.");
     };
 
     const filteredStudents = students.filter((student) => {
@@ -52,6 +43,7 @@ const ManageStudents = () => {
 
         const studentId =
             student.id ||
+            student._id ||
             student.studentId ||
             "";
 
@@ -209,6 +201,8 @@ const ManageStudents = () => {
 
                     <section className="course-card">
 
+                        {error && <p role="alert">{error}</p>}
+
                         <table
                             className="course-table"
                             id="studentTable"
@@ -244,6 +238,7 @@ const ManageStudents = () => {
 
                                         const studentId =
                                             student.id ||
+                                            student._id ||
                                             student.studentId ||
                                             "N/A";
 

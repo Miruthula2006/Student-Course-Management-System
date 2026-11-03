@@ -2,7 +2,7 @@
 
 A web-based Student Course Management System developed as a Full Stack Web Development project.
 
-The project started with a traditional HTML, CSS, and JavaScript implementation and was later converted into a React-based application with a Mock REST API for course management.
+The project started with a traditional HTML, CSS, and JavaScript implementation and now includes a React application with an Express, MongoDB, JWT, and Socket.IO backend. The legacy HTML frontend and mock API remain in the repository for the earlier project tasks.
 
 ##  Project Overview
 
@@ -57,9 +57,26 @@ The Student Course Management System (SCMS) provides separate interfaces for stu
 
 ### API
 
-- JSON Server
+- Node.js and Express
+- MongoDB and Mongoose
+- JWT and bcryptjs
+- Socket.IO
 - REST API
 - Axios
+
+## Local Setup
+
+1. Copy `backend/.env.example` to `backend/.env` and set `MONGO_URI` and a long random `JWT_SECRET`.
+2. Install backend dependencies with `cd backend` and `npm install`; run `npm run seed-courses` once to load the existing demo courses into an empty database, then start with `npm run dev`.
+3. Copy `react-frontend/.env.example` to `react-frontend/.env`.
+4. Install and start React with `cd react-frontend`, `npm install`, and `npm run dev`.
+5. Create the first administrator using the backend `create-admin` script with `ADMIN_NAME`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD` configured in the backend environment. Admin passwords must be at least 12 characters.
+
+## Deployment
+
+The React app is prepared for Vercel (`react-frontend/vercel.json`); the Express API can be deployed as a Render web service, with MongoDB Atlas as the database. Set `MONGO_URI`, `JWT_SECRET`, `JWT_EXPIRES_IN`, and `CLIENT_URL` on the backend. Set `VITE_API_URL` (backend origin, without `/api/v1`) and `VITE_SOCKET_URL` (backend origin) on the frontend, then rebuild/redeploy. The backend health check is `/api/health`.
+
+Deployment is not yet performed. Replace these notes with live URLs only after hosting accounts are configured and the production workflow has been tested. See [docs/database-schema.md](docs/database-schema.md) for collection relationships and indexes.
 
 
 ##  Project Structure

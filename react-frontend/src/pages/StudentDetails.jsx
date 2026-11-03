@@ -2,73 +2,44 @@ import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link, useLocation } from "react-router-dom";
 import LogoutButton from "../components/LogoutButton.jsx";
-import { issueCertificate, normalizeCourses } from "../utils/courseUtils.js";
+import api from "../services/api.js";
 
 const StudentDetails = () => {
     const location = useLocation();
 
     const [student, setStudent] = useState(null);
-    const [courses, setCourses] = useState([]);
+    const [enrollments, setEnrollments] = useState([]);
+    const [certificates, setCertificates] = useState([]);
+    const [loadedStudentId, setLoadedStudentId] = useState(null);
+    const selectedStudentId = new URLSearchParams(location.search).get("studentId");
+    const loading = Boolean(selectedStudentId) && loadedStudentId !== selectedStudentId;
 
     useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const selectedStudentId = params.get("studentId");
-
-        const students =
-            JSON.parse(localStorage.getItem("students")) || [];
-
-        const storedCourses = normalizeCourses(
-            JSON.parse(localStorage.getItem("courses")) || []
-        );
-
-        const selectedStudentIndex = students.findIndex(
-            (item) =>
-                String(item.id || item.studentId) === String(selectedStudentId)
-        );
-
-        if (selectedStudentIndex === -1) {
-            setStudent(null);
-            setCourses(storedCourses);
-            return;
-        }
-
-        // Migrate older completed courses: if a course was already marked
-        // completed before certificate generation was introduced, issue its
-        // certificate now so Admin can see it too.
-        const selectedStudent = { ...students[selectedStudentIndex] };
-        const completedIds = Array.isArray(selectedStudent.completedCourses)
-            ? selectedStudent.completedCourses
-            : [];
-        let changed = false;
-
-        completedIds.forEach((courseId) => {
-            const course = storedCourses.find(
-                (item) => String(item.id) === String(courseId)
-            );
-            if (!course) return;
-
-            const alreadyIssued = Array.isArray(selectedStudent.certificates) &&
-                selectedStudent.certificates.some(
-                    (certificate) => String(certificate.courseId) === String(course.id)
-                );
-
-            if (!alreadyIssued) {
-                issueCertificate(selectedStudent, course);
-                changed = true;
+        if (!selectedStudentId) return;
+        let active = true;
+        Promise.all([
+            api.get(`/api/v1/students/${encodeURIComponent(selectedStudentId)}`),
+            api.get("/api/v1/enrollments"),
+            api.get(`/api/v1/certificates?studentId=${encodeURIComponent(selectedStudentId)}`)
+        ]).then(([studentResponse, enrollmentResponse, certificateResponse]) => {
+            if (!active) return;
+            const record = studentResponse.data.student;
+            setStudent({ ...record, id: String(record._id || record.id) });
+            setEnrollments((enrollmentResponse.data.enrollments || []).filter(
+                (item) => String(item.student?._id || item.student) === String(selectedStudentId)
+            ));
+            setCertificates(certificateResponse.data.certificates || []);
+            setLoadedStudentId(selectedStudentId);
+        }).catch(() => {
+            if (active) {
+                setStudent(null);
+                setLoadedStudentId(selectedStudentId);
             }
         });
+        return () => { active = false; };
+    }, [selectedStudentId]);
 
-        if (changed) {
-            const updatedStudents = [...students];
-            updatedStudents[selectedStudentIndex] = selectedStudent;
-            localStorage.setItem("students", JSON.stringify(updatedStudents));
-        }
-
-        setStudent(selectedStudent);
-        setCourses(storedCourses);
-    }, [location.search]);
-
-    if (!student) {
+    if (loading || !student) {
         return (
             <>
                 <PageCss href="/css/style.css" />
@@ -140,16 +111,14 @@ const StudentDetails = () => {
                                 Student Details
                             </h1>
 
-                            <p>
-                                Student information could not be found.
-                            </p>
+                            <p>{loading ? "Loading student information..." : "Student information could not be found."}</p>
 
                         </header>
 
                         <section className="course-card">
 
                             <h2>
-                                Student Not Found
+                                {loading ? "Loading Student" : "Student Not Found"}
                             </h2>
 
                             <br />
@@ -200,27 +169,12 @@ const StudentDetails = () => {
         student.year ||
         "N/A";
 
-    const studentStatus =
-        student.status ||
-        "Active";
-
-    const enrolledCourseIds =
-        Array.isArray(student.enrolledCourses)
-            ? student.enrolledCourses
-            : [];
-
-    const completedCourseIds =
-        Array.isArray(student.completedCourses)
-            ? student.completedCourses
-            : [];
-
-    const enrolledCourses = courses.filter((course) =>
-        enrolledCourseIds.includes(course.id)
-    );
-
-    const completedCount = completedCourseIds.filter((courseId) =>
-        enrolledCourseIds.includes(courseId)
-    ).length;
+    const studentStatus = "Active";
+    const enrolledCourses = enrollments.map((item) => ({
+        ...item.course,
+        enrollmentStatus: item.status
+    })).filter((course) => course._id);
+    const completedCount = enrollments.filter((item) => item.status === "completed").length;
 
     const inProgressCount =
         Math.max(
@@ -228,10 +182,7 @@ const StudentDetails = () => {
             0
         );
 
-    const certificateCount =
-        Array.isArray(student.certificates)
-            ? student.certificates.length
-            : 0;
+    const certificateCount = certificates.length;
 
     return (
         <>
@@ -489,26 +440,19 @@ const StudentDetails = () => {
 
                                     enrolledCourses.map((course) => {
 
-                                        const isCompleted =
-                                            completedCourseIds.includes(
-                                                course.id
-                                            );
-
                                         return (
                                             <tr key={course.id}>
 
                                                 <td>
-                                                    {course.id}
+                                                    {course.courseCode}
                                                 </td>
 
                                                 <td>
-                                                    {course.title}
+                                                    {course.courseName}
                                                 </td>
 
                                                 <td>
-                                                    {isCompleted
-                                                        ? "Completed"
-                                                        : "In Progress"}
+                                                    {course.enrollmentStatus === "completed" ? "Completed" : course.enrollmentStatus}
                                                 </td>
 
                                             </tr>
@@ -542,16 +486,16 @@ const StudentDetails = () => {
                             {certificateCount === 0 ? (
                                 <div>
                                     <p id="certificateMessage">No certificates earned yet.</p>
-                                    <p className="muted-note">Certificates are generated automatically when a student completes all required learning resources for a course.</p>
+                                    <p className="muted-note">Certificates appear here after course completion.</p>
                                 </div>
                             ) : (
                                 <div>
                                     <p id="certificateMessage">{certificateCount} certificate{certificateCount !== 1 ? "s" : ""} earned.</p>
                                     <div className="certificate-list">
-                                        {student.certificates.map((certificate) => (
-                                            <div className="certificate-list-item" key={certificate.id}>
-                                                <div><strong>{certificate.courseTitle}</strong><small>Issued {certificate.issueDate} · {certificate.id}</small></div>
-                                                <Link className="secondary-action" to={`/certificate/${encodeURIComponent(certificate.id)}`}>View Certificate</Link>
+                                        {certificates.map((certificate) => (
+                                            <div className="certificate-list-item" key={certificate._id}>
+                                                <div><strong>{certificate.course?.courseName}</strong><small>Issued {new Date(certificate.issuedAt).toLocaleDateString()} · {certificate.certificateCode}</small></div>
+                                                <Link className="secondary-action" to={`/certificate/${encodeURIComponent(certificate._id)}`}>View Certificate</Link>
                                             </div>
                                         ))}
                                     </div>

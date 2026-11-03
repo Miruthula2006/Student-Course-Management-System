@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import PageCss from "../components/PageCss.jsx";
 import api from "../services/api";
-import { useAuth } from "../auth/AuthContext.jsx";
+import { useAuth } from "../auth/useAuth.js";
 
 const StudentLogin = () => {
   const [email, setEmail] = useState("");
@@ -26,19 +26,28 @@ const StudentLogin = () => {
       });
 
       const student = response.data.data;
-        const token = response.data.token;
+const token = response.data.token;
 
-        login({
-        id: student.id,
-        name: student.name,
-        email: student.email,
-        department: student.department,
-        role: "student",
-        token
-        });
+// Allow only student accounts on the student login page
+if (student.role !== "student") {
+  setMessage("This is an administrator account. Please use Admin Login.");
+  return;
+}
 
-      setMessage("Login successful!");
-      navigate("/student-dashboard");
+login({
+  id: student.id,
+  name: student.name,
+  registerNumber: student.registerNumber,
+  email: student.email,
+  phone: student.phone,
+  department: student.department,
+  year: student.year,
+  role: student.role,
+  token
+});
+
+setMessage("Login successful!");
+navigate("/student-dashboard");
     } catch (error) {
       setMessage(
         error.response?.data?.message ||

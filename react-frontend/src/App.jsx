@@ -23,7 +23,12 @@ import StudentDetails from "./pages/StudentDetails.jsx";
 import ViewEnrollments from "./pages/ViewEnrollments.jsx";
 import CourseDetails from "./pages/CourseDetails.jsx";
 import Certificate from "./pages/Certificate.jsx";
+import Chat from "./components/Chat.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { issueCertificate, normalizeCourses } from "./utils/courseUtils.js";
+
+const studentRoute = (element) => <ProtectedRoute role="student">{element}</ProtectedRoute>;
+const adminRoute = (element) => <ProtectedRoute role="admin">{element}</ProtectedRoute>;
 
 const App = () => {
 
@@ -139,12 +144,12 @@ const App = () => {
 
             <Route
                 path="/student-dashboard"
-                element={<StudentDashboard />}
+                element={studentRoute(<StudentDashboard />)}
             />
 
             <Route
                 path="/student-dashboard.html"
-                element={<StudentDashboard />}
+                element={studentRoute(<StudentDashboard />)}
             />
 
             <Route
@@ -159,42 +164,44 @@ const App = () => {
 
             <Route
                 path="/course/:courseId"
-                element={<CourseDetails />}
+                element={studentRoute(<CourseDetails />)}
             />
 
             <Route
                 path="/my-courses"
-                element={<MyCourses />}
+                element={studentRoute(<MyCourses />)}
             />
 
             <Route
                 path="/my-courses.html"
-                element={<MyCourses />}
+                element={studentRoute(<MyCourses />)}
             />
 
             <Route
                 path="/progress"
-                element={<Progress />}
+                element={studentRoute(<Progress />)}
             />
 
             <Route
                 path="/progress.html"
-                element={<Progress />}
+                element={studentRoute(<Progress />)}
             />
 
             <Route
                 path="/notifications"
-                element={<Notifications />}
+                element={studentRoute(<Notifications />)}
             />
 
             <Route
                 path="/notifications.html"
-                element={<Notifications />}
+                element={studentRoute(<Notifications />)}
             />
+
+            <Route path="/chat" element={studentRoute(<Chat />)} />
 
             <Route
                 path="/certificate/:certificateId"
-                element={<Certificate />}
+                element={<ProtectedRoute roles={["student", "admin"]}><Certificate /></ProtectedRoute>}
             />
 
             {/* =========================
@@ -203,72 +210,72 @@ const App = () => {
 
             <Route
                 path="/admin-dashboard"
-                element={<AdminDashboard />}
+                element={adminRoute(<AdminDashboard />)}
             />
 
             <Route
                 path="/admin-dashboard.html"
-                element={<AdminDashboard />}
+                element={adminRoute(<AdminDashboard />)}
             />
 
             <Route
                 path="/manage-courses"
-                element={<ManageCourses />}
+                element={adminRoute(<ManageCourses />)}
             />
 
             <Route
                 path="/manage-courses.html"
-                element={<ManageCourses />}
+                element={adminRoute(<ManageCourses />)}
             />
 
             <Route
                 path="/add-course"
-                element={<AddCourse />}
+                element={adminRoute(<AddCourse />)}
             />
 
             <Route
                 path="/add-course.html"
-                element={<AddCourse />}
+                element={adminRoute(<AddCourse />)}
             />
 
             <Route
                 path="/edit-course/:id"
-                element={<EditCourse />}
+                element={adminRoute(<EditCourse />)}
             />
 
             <Route
                 path="/edit-course.html"
-                element={<EditCourse />}
+                element={adminRoute(<EditCourse />)}
             />
 
             <Route
                 path="/manage-students"
-                element={<ManageStudents />}
+                element={adminRoute(<ManageStudents />)}
             />
 
             <Route
                 path="/manage-students.html"
-                element={<ManageStudents />}
+                element={adminRoute(<ManageStudents />)}
             />
 
             <Route
                 path="/student-details"
-                element={<StudentDetails />}
+                element={adminRoute(<StudentDetails />)}
             />
 
             <Route
                 path="/student-details.html"
-                element={<StudentDetails />}
+                element={adminRoute(<StudentDetails />)}
             />
 
             <Route
                 path="/view-enrollments"
-                element={<ViewEnrollments />}
+                element={adminRoute(<ViewEnrollments />)}
             />
 
             <Route
                 path="/view-enrollments.html"
-                element={<ViewEnrollments />}
+                element={adminRoute(<ViewEnrollments />)}
             />
 
         </Routes>

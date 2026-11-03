@@ -1,107 +1,116 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import PageCss from "../components/PageCss.jsx";
 import LogoutButton from "../components/LogoutButton.jsx";
-import { useAuth } from "../auth/AuthContext.jsx";
-import { getCourseProgress, issueCertificate, normalizeCourses, saveStudent } from "../utils/courseUtils.js";
+import { useCourses } from "../context/CourseContext.jsx";
+import api from "../services/api.js";
 
 const CourseDetails = () => {
     const { courseId } = useParams();
-    const { user } = useAuth();
-    const navigate = useNavigate();
-    const [course, setCourse] = useState(null);
-    const [student, setStudent] = useState(null);
+    const { courses } = useCourses();
+    const [enrollmentStatus, setEnrollmentStatus] = useState("");
+    const [progressData, setProgressData] = useState(null);
+    const [certificateId, setCertificateId] = useState("");
     const [message, setMessage] = useState("");
     const [activeMaterial, setActiveMaterial] = useState(null);
+    const sourceCourse = courses.find((item) => String(item._id || item.id) === String(courseId));
+    const course = useMemo(() => sourceCourse ? {
+        ...sourceCourse,
+        title: sourceCourse.title || sourceCourse.courseName,
+        description: sourceCourse.description || sourceCourse.overview || "No description available.",
+        materials: Array.isArray(sourceCourse.materials) ? sourceCourse.materials : []
+    } : null, [sourceCourse]);
 
     useEffect(() => {
-        const courses = normalizeCourses(JSON.parse(localStorage.getItem("courses") || "[]"));
-        const students = JSON.parse(localStorage.getItem("students") || "[]");
-        const foundCourse = courses.find((item) => item.id === courseId);
-        const currentStudent = user ? students.find((item) => item.email === user.email) : null;
-        setCourse(foundCourse || null);
-        setStudent(currentStudent || null);
-        if (foundCourse) {
-            localStorage.setItem("courses", JSON.stringify(courses));
-        }
-    }, [courseId, user]);
+        if (!sourceCourse) return;
+
+        let active = true;
+        Promise.all([
+            api.get("/api/v1/enrollments/mine"),
+            api.get("/api/v1/progress/mine"),
+            api.get("/api/v1/certificates/mine")
+        ]).then(([enrollmentResponse, progressResponse, certificateResponse]) => {
+                if (!active) return;
+                const enrollment = enrollmentResponse.data.enrollments.find(
+                    (item) => String(item.course?._id || item.course) === String(sourceCourse._id || sourceCourse.id)
+                );
+                const savedProgress = progressResponse.data.progress.find(
+                    (item) => String(item.course?._id || item.course) === String(sourceCourse._id || sourceCourse.id)
+                );
+                setEnrollmentStatus(enrollment?.status || "");
+                setProgressData(savedProgress || null);
+                const certificate = certificateResponse.data.certificates.find(
+                    (item) => String(item.course?._id || item.course) === String(sourceCourse._id || sourceCourse.id)
+                );
+                setCertificateId(certificate?._id || "");
+            })
+            .catch((requestError) => {
+                if (active) setMessage(requestError.response?.data?.message || "Unable to load course activity.");
+            });
+        return () => { active = false; };
+    }, [courseId, sourceCourse]);
 
     const progress = useMemo(() => {
-        return course && student ? getCourseProgress(student, course) : { completedIds: [], completedCount: 0, total: 0, percent: 0, complete: false };
-    }, [course, student]);
+        const materials = course?.materials || [];
+        const total = materials.length;
+        const completedCount = Math.min(progressData?.completedLessons || 0, total);
+        return {
+            completedIds: materials.slice(0, completedCount).map((item) => item.id),
+            completedCount,
+            total,
+            percent: total ? Math.round(completedCount / total * 100) : 0,
+            complete: total > 0 && completedCount === total
+        };
+    }, [course, progressData]);
 
     if (!course) {
         return <div className="scms-centered-state"><h2>Course not found</h2><Link to="/courses" className="student-btn">Back to Courses</Link></div>;
     }
 
-    const isEnrolled = Boolean(student?.enrolledCourses?.includes(course.id));
+    const isEnrolled = enrollmentStatus === "active" || enrollmentStatus === "completed";
 
-    const enroll = () => {
-        if (!student) {
-            navigate("/student-login");
-            return;
+    const enroll = async () => {
+        try {
+            await api.post("/api/v1/enrollments", { courseId: course._id || course.id });
+            setEnrollmentStatus("active");
+            setMessage("You are now enrolled. Start the learning resources below.");
+        } catch (requestError) {
+            setMessage(requestError.response?.data?.message || "Unable to enroll in this course.");
         }
-        if (isEnrolled) return;
-        const updated = { ...student };
-        updated.enrolledCourses = Array.isArray(updated.enrolledCourses) ? [...updated.enrolledCourses, course.id] : [course.id];
-        updated.completedCourses = Array.isArray(updated.completedCourses) ? [...updated.completedCourses] : [];
-        updated.enrollments = Array.isArray(updated.enrollments) ? [...updated.enrollments, {
-            courseId: course.id,
-            courseTitle: course.title,
-            enrollmentDate: new Date().toLocaleDateString(),
-            status: "Active"
-        }] : [{ courseId: course.id, courseTitle: course.title, enrollmentDate: new Date().toLocaleDateString(), status: "Active" }];
-        updated.notifications = Array.isArray(updated.notifications) ? [...updated.notifications, {
-            id: `NT_${Date.now()}`,
-            message: `Successfully enrolled in ${course.title}`,
-            date: new Date().toLocaleDateString(),
-            time: new Date().toLocaleTimeString()
-        }] : [];
-        saveStudent(updated);
-        setStudent(updated);
-        setMessage("You are now enrolled. Start the learning resources below.");
     };
 
-    const toggleMaterial = (materialId) => {
-        if (!student) {
-            navigate("/student-login");
-            return;
-        }
+    const toggleMaterial = async (materialId) => {
         if (!isEnrolled) {
             setMessage("Please enroll in the course first.");
             return;
         }
-        const updated = { ...student };
-        updated.courseProgress = { ...(updated.courseProgress || {}) };
-        const current = Array.isArray(updated.courseProgress[course.id]) ? [...updated.courseProgress[course.id]] : [];
-        updated.courseProgress[course.id] = current.includes(materialId)
-            ? current.filter((id) => id !== materialId)
-            : [...current, materialId];
-        setStudent(updated);
-        saveStudent(updated);
-        setMessage("Learning progress saved.");
+        const checked = progress.completedIds.includes(materialId);
+        const completedLessons = Math.max(0, Math.min(progress.total, progress.completedCount + (checked ? -1 : 1)));
+        try {
+            const response = await api.put(`/api/v1/progress/${encodeURIComponent(course._id || course.id)}`, {
+                completedLessons,
+                totalLessons: Math.max(progress.total, 1)
+            });
+            setProgressData(response.data.progress);
+            setMessage("Learning progress saved.");
+        } catch (requestError) {
+            setMessage(requestError.response?.data?.message || "Unable to save learning progress.");
+        }
     };
 
-    const completeCourse = () => {
-        const latestProgress = getCourseProgress(student, course);
-        if (!latestProgress.complete) {
+    const completeCourse = async () => {
+        if (!progress.complete) {
             setMessage("Complete every learning resource before completing the course.");
             return;
         }
-        const updated = { ...student };
-        updated.completedCourses = Array.isArray(updated.completedCourses) ? [...updated.completedCourses] : [];
-        if (!updated.completedCourses.includes(course.id)) updated.completedCourses.push(course.id);
-        updated.enrollments = Array.isArray(updated.enrollments) ? updated.enrollments.map((item) => item.courseId === course.id ? { ...item, status: "Completed", completionDate: new Date().toLocaleDateString() } : item) : [];
-        const result = issueCertificate(updated, course);
-        result.student.notifications = Array.isArray(result.student.notifications) ? [...result.student.notifications, {
-            id: `NT_${Date.now()}`,
-            message: `Course completed and certificate generated for ${course.title}.`,
-            date: new Date().toLocaleDateString(),
-            time: new Date().toLocaleTimeString()
-        }] : [];
-        saveStudent(result.student);
-        setStudent({ ...result.student });
-        setMessage("Course completed! Your certificate has been generated.");
+        try {
+            const response = await api.patch(`/api/v1/enrollments/${encodeURIComponent(course._id || course.id)}/complete`);
+            setEnrollmentStatus("completed");
+            setCertificateId(response.data.certificate?._id || "");
+            setMessage("Course completed.");
+        } catch (requestError) {
+            setMessage(requestError.response?.data?.message || "Unable to complete this course.");
+        }
     };
 
     return (
@@ -162,7 +171,7 @@ const CourseDetails = () => {
                                             <p>{material.content}</p>
                                             <div className="resource-actions">
                                                 {material.url ? <a className="secondary-action" href={material.url} target="_blank" rel="noreferrer"><i className="fa-solid fa-arrow-up-right-from-square"></i> Open Resource</a> : <button className="secondary-action" onClick={() => setActiveMaterial(material)}><i className="fa-solid fa-eye"></i> View Resource</button>}
-                                                <label className="completion-check"><input type="checkbox" checked={done} onChange={() => toggleMaterial(material.id)} /> Mark complete</label>
+                                                <label className="completion-check"><input type="checkbox" checked={done} disabled={done ? index < progress.completedCount - 1 : index > progress.completedCount} onChange={() => toggleMaterial(material.id)} /> Mark complete</label>
                                             </div>
                                         </div>
                                         {done && <span className="done-badge"><i className="fa-solid fa-check"></i> Done</span>}
@@ -175,10 +184,10 @@ const CourseDetails = () => {
                     <section className="course-card completion-panel">
                         <h2>Course Completion</h2>
                         <p>{progress.complete ? "All learning resources are complete. You can now finish the course and receive your certificate." : `Complete ${progress.total - progress.completedCount} more resource${progress.total - progress.completedCount === 1 ? "" : "s"} to unlock course completion.`}</p>
-                        <button className="student-btn" disabled={!progress.complete || student?.completedCourses?.includes(course.id)} onClick={completeCourse}>
-                            {student?.completedCourses?.includes(course.id) ? "Course Completed" : "Complete Course & Generate Certificate"}
+                        <button className="student-btn" disabled={!progress.complete || enrollmentStatus === "completed"} onClick={completeCourse}>
+                            {enrollmentStatus === "completed" ? "Course Completed" : "Complete Course"}
                         </button>
-                        {student?.certificates?.some((item) => item.courseId === course.id) && <Link to={`/certificate/${encodeURIComponent(student.certificates.find((item) => item.courseId === course.id).id)}`} className="secondary-action">View Certificate</Link>}
+                        {certificateId && <Link to={`/certificate/${encodeURIComponent(certificateId)}`} className="secondary-action">View Certificate</Link>}
                     </section>
                 </main>
             </div>

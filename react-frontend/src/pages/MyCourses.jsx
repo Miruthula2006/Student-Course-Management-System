@@ -1,33 +1,44 @@
 import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext.jsx";
+import { useAuth } from "../auth/useAuth.js";
 import LogoutButton from "../components/LogoutButton.jsx";
-import { getCourseProgress, normalizeCourses } from "../utils/courseUtils.js";
+import api from "../services/api.js";
 
 const MyCourses = () => {
     const { user } = useAuth();
     const [enrolledCourses, setEnrolledCourses] = useState([]);
-    const [student, setStudent] = useState(null);
-
-    const load = () => {
-        const courses = normalizeCourses(JSON.parse(localStorage.getItem("courses") || "[]"));
-        const students = JSON.parse(localStorage.getItem("students") || "[]");
-        const current = user ? students.find((item) => item.email === user.email) : null;
-        setStudent(current || null);
-        setEnrolledCourses(current?.enrolledCourses?.length
-            ? courses.filter((course) => current.enrolledCourses.includes(course.id))
-            : []);
-    };
+    const [progressByCourse, setProgressByCourse] = useState({});
+    const [certificateByCourse, setCertificateByCourse] = useState({});
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        load();
-        window.addEventListener("studentDataChanged", load);
-        window.addEventListener("storage", load);
-        return () => {
-            window.removeEventListener("studentDataChanged", load);
-            window.removeEventListener("storage", load);
-        };
+        let active = true;
+        Promise.all([
+            api.get("/api/v1/enrollments/mine"),
+            api.get("/api/v1/progress/mine"),
+            api.get("/api/v1/certificates/mine")
+        ]).then(([enrollmentResponse, progressResponse, certificateResponse]) => {
+            if (!active) return;
+            setEnrolledCourses(enrollmentResponse.data.enrollments
+                .map((item) => item.course)
+                .filter(Boolean)
+                .map((course) => ({
+                    ...course,
+                    title: course.title || course.courseName,
+                    description: course.description || course.overview || "No description available."
+                })));
+            setProgressByCourse(Object.fromEntries(
+                progressResponse.data.progress.map((item) => [String(item.course?._id || item.course), item])
+            ));
+            setCertificateByCourse(Object.fromEntries(
+                certificateResponse.data.certificates.map((item) => [String(item.course?._id || item.course), item])
+            ));
+            setError("");
+        }).catch((requestError) => {
+            if (active) setError(requestError.response?.data?.message || "Unable to load your courses.");
+        });
+        return () => { active = false; };
     }, [user]);
 
     return (
@@ -53,6 +64,7 @@ const MyCourses = () => {
                         <p>Continue your courses, finish the learning resources, and earn certificates.</p>
                     </header>
                     <section className="course-grid">
+                        {error && <p role="alert">{error}</p>}
                         {enrolledCourses.length === 0 ? (
                             <div className="course-card">
                                 <h2>No courses enrolled yet</h2>
@@ -60,10 +72,18 @@ const MyCourses = () => {
                                 <Link to="/courses" className="student-btn">Browse Courses</Link>
                             </div>
                         ) : enrolledCourses.map((course) => {
-                            const progress = getCourseProgress(student, course);
-                            const certificate = student?.certificates?.find((item) => item.courseId === course.id);
+                            const courseProgress = progressByCourse[String(course._id || course.id)];
+                            const total = courseProgress?.totalLessons || course.materials?.length || 0;
+                            const completed = courseProgress?.completedLessons || 0;
+                            const progress = {
+                                percent: courseProgress?.progressPercent || 0,
+                                completedCount: completed,
+                                total,
+                                complete: total > 0 && completed === total
+                            };
+                            const certificate = certificateByCourse[String(course._id || course.id)];
                             return (
-                                <article className="course-card scms-course-card" key={course.id}>
+                                <article className="course-card scms-course-card" key={course._id || course.id}>
                                     <div className="course-card-badge">{course.category}</div>
                                     <h3>{course.title}</h3>
                                     <p>{course.description}</p>
@@ -74,8 +94,8 @@ const MyCourses = () => {
                                         <small>{progress.completedCount} of {progress.total} resources completed</small>
                                     </div>
                                     <div className="course-card-actions">
-                                        <Link to={`/course/${encodeURIComponent(course.id)}`} className="student-btn">{progress.complete ? "Review Course" : "Continue Learning"}</Link>
-                                        {certificate && <Link to={`/certificate/${encodeURIComponent(certificate.id)}`} className="secondary-action">View Certificate</Link>}
+                                        <Link to={`/course/${encodeURIComponent(course._id || course.id)}`} className="student-btn">{progress.complete ? "Review Course" : "Continue Learning"}</Link>
+                                        {certificate && <Link to={`/certificate/${encodeURIComponent(certificate._id)}`} className="secondary-action">View Certificate</Link>}
                                     </div>
                                 </article>
                             );

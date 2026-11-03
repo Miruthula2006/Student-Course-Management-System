@@ -1,35 +1,48 @@
 import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext.jsx";
+import { useAuth } from "../auth/useAuth.js";
+import { io } from "socket.io-client";
+import api from "../services/api.js";
+
+const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
 const Notifications = () => {
     const { user } = useAuth();
     const [notifications, setNotifications] = useState([]);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        const students =
-            JSON.parse(localStorage.getItem("students")) || [];
+        let active = true;
+        api.get("/api/v1/notifications")
+            .then((response) => {
+                if (active) setNotifications(response.data.notifications || []);
+            })
+            .catch((requestError) => {
+                if (active) setError(requestError.response?.data?.message || "Unable to load notifications.");
+            });
 
-        if (!user) {
-            setNotifications([]);
-            return;
-        }
+        const socket = io(socketUrl, {
+            auth: { token: sessionStorage.getItem("token") }
+        });
+        socket.on("new_notification", (notification) => {
+            setNotifications((current) => [notification, ...current]);
+        });
 
-        const student = students.find(
-            (item) => item.email === user.email
-        );
-
-        if (
-            !student ||
-            !Array.isArray(student.notifications)
-        ) {
-            setNotifications([]);
-            return;
-        }
-
-        setNotifications(student.notifications);
+        return () => {
+            active = false;
+            socket.disconnect();
+        };
     }, [user]);
+
+    async function markAsRead(id) {
+        try {
+            const response = await api.patch(`/api/v1/notifications/${encodeURIComponent(id)}/read`);
+            setNotifications((current) => current.map((item) => item._id === id ? response.data.notification : item));
+        } catch (requestError) {
+            setError(requestError.response?.data?.message || "Unable to update notification.");
+        }
+    }
 
     return (
         <>
@@ -83,6 +96,13 @@ const Notifications = () => {
                             </Link>
                         </li>
 
+                        <li>
+                            <Link to="/chat">
+                                <i className="fa-solid fa-comments"></i>
+                                Chat
+                            </Link>
+                        </li>
+
                         <li className="active">
                             <Link to="/notifications">
                                 <i className="fa-solid fa-bell"></i>
@@ -125,6 +145,8 @@ const Notifications = () => {
                     ========================== */}
 
                     <section id="notificationContainer">
+
+                        {error && <p role="alert">{error}</p>}
 
                         {notifications.length === 0 ? (
 
@@ -176,7 +198,7 @@ const Notifications = () => {
 
                                 <article
                                     className="course-card"
-                                    key={notification.id}
+                                    key={notification._id || notification.id}
                                 >
 
                                     <h2>
@@ -192,15 +214,12 @@ const Notifications = () => {
 
                                     <br />
 
-                                    <p>
-                                        <strong>Date:</strong>{" "}
-                                        {notification.date}
-                                    </p>
-
-                                    <p>
-                                        <strong>Time:</strong>{" "}
-                                        {notification.time}
-                                    </p>
+                                    <p><strong>Date:</strong> {new Date(notification.createdAt || notification.date).toLocaleString()}</p>
+                                    {!notification.isRead && (
+                                        <button type="button" className="student-btn" onClick={() => markAsRead(notification._id)}>
+                                            Mark as read
+                                        </button>
+                                    )}
 
                                 </article>
 

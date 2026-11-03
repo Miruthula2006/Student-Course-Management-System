@@ -1,8 +1,9 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../services/api.js";
+import { AuthContext } from "./AuthContextStore.js";
 
-const AuthContext = createContext();
-
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
+    const [isReady, setIsReady] = useState(() => !sessionStorage.getItem("token"));
 
     const [user, setUser] = useState(() => {
         try {
@@ -27,6 +28,25 @@ export const AuthProvider = ({ children }) => {
 
     // Keep React state synchronized with localStorage
     useEffect(() => {
+        const token = sessionStorage.getItem("token");
+        if (token) {
+            api.get("/api/v1/profile")
+                .then((response) => {
+                    const profile = response.data.student;
+                    const verifiedUser = {
+                        ...profile,
+                        id: String(profile.id || profile._id)
+                    };
+                    localStorage.setItem("loggedInUser", JSON.stringify(verifiedUser));
+                    setUser(verifiedUser);
+                })
+                .catch(() => {
+                    localStorage.removeItem("loggedInUser");
+                    sessionStorage.removeItem("token");
+                    setUser(null);
+                })
+                .finally(() => setIsReady(true));
+        }
 
         const handleAuthChange = () => {
 
@@ -39,6 +59,7 @@ export const AuthProvider = ({ children }) => {
                         ? JSON.parse(loggedInUser)
                         : null
                 );
+                setIsReady(true);
 
             } catch (error) {
                 console.error(
@@ -93,29 +114,30 @@ const login = (userData) => {
     }
 
     setUser(user);
+    setIsReady(true);
 
     window.dispatchEvent(
         new Event("authChanged")
     );
 };
-
 const logout = () => {
     localStorage.removeItem("loggedInUser");
     sessionStorage.removeItem("token");
 
     setUser(null);
+    setIsReady(true);
 
     window.dispatchEvent(
         new Event("authChanged")
     );
 };
-
 
 
     return (
         <AuthContext.Provider
             value={{
                 user,
+                isReady,
                 login,
                 logout
             }}
@@ -125,7 +147,5 @@ const logout = () => {
     );
 };
 
+export default AuthProvider;
 
-export const useAuth = () => {
-    return useContext(AuthContext);
-};

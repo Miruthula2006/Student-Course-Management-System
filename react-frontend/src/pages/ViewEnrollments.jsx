@@ -2,77 +2,36 @@ import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link } from "react-router-dom";
 import LogoutButton from "../components/LogoutButton.jsx";
+import api from "../services/api.js";
 
 const ViewEnrollments = () => {
     const [enrollments, setEnrollments] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        const students =
-            JSON.parse(localStorage.getItem("students")) || [];
-
-        const courses =
-            JSON.parse(localStorage.getItem("courses")) || [];
-
-        const allEnrollments = [];
-
-        students.forEach((student) => {
-            if (Array.isArray(student.enrollments)) {
-                student.enrollments.forEach((enrollment) => {
-
-                    const course = courses.find(
-                        (item) => item.id === enrollment.courseId
-                    );
-
-                    allEnrollments.push({
-                        studentId:
-                            student.id ||
-                            student.studentId ||
-                            "N/A",
-
-                        studentName:
-                            student.name ||
-                            student.fullName ||
-                            "N/A",
-
-                        course:
-                            course?.title ||
-                            enrollment.courseId ||
-                            "N/A",
-
-                        courseId:
-                            enrollment.courseId ||
-                            "N/A",
-
-                        enrollmentDate:
-                            enrollment.enrollmentDate ||
-                            "N/A",
-
-                        status:
-                            enrollment.status ||
-                            "Active"
-                    });
-                });
-            }
-        });
-
-        setEnrollments(allEnrollments);
+        api.get("/api/v1/enrollments")
+            .then((response) => setEnrollments(response.data.enrollments || []))
+            .catch((requestError) => setError(requestError.response?.data?.message || "Unable to load enrollments."));
     }, []);
 
     const filteredEnrollments = enrollments.filter(
         (enrollment) => {
             const search = searchTerm.toLowerCase();
+            const studentId = enrollment.student?.registerNumber || String(enrollment.student?._id || "");
+            const studentName = enrollment.student?.name || "";
+            const courseName = enrollment.course?.courseName || "";
 
             return (
-                enrollment.studentId
+                studentId
                     .toLowerCase()
                     .includes(search) ||
 
-                enrollment.studentName
+                studentName
                     .toLowerCase()
                     .includes(search) ||
 
-                enrollment.course
+                courseName
                     .toLowerCase()
                     .includes(search)
             );
@@ -212,6 +171,8 @@ const ViewEnrollments = () => {
 
                     <section className="course-card">
 
+                        {error && <p role="alert">{error}</p>}
+
                         <table
                             className="course-table"
                             id="enrollmentTable"
@@ -245,23 +206,23 @@ const ViewEnrollments = () => {
                                         (enrollment, index) => (
 
                                             <tr
-                                                key={`${enrollment.studentId}-${enrollment.courseId}-${index}`}
+                                                key={enrollment._id || index}
                                             >
 
                                                 <td>
-                                                    {enrollment.studentId}
+                                                    {enrollment.student?.registerNumber || enrollment.student?._id || "N/A"}
                                                 </td>
 
                                                 <td>
-                                                    {enrollment.studentName}
+                                                    {enrollment.student?.name || "N/A"}
                                                 </td>
 
                                                 <td>
-                                                    {enrollment.course}
+                                                    {enrollment.course?.courseName || "N/A"}
                                                 </td>
 
                                                 <td>
-                                                    {enrollment.enrollmentDate}
+                                                    {enrollment.enrolledAt ? new Date(enrollment.enrolledAt).toLocaleDateString() : "N/A"}
                                                 </td>
 
                                                 <td>

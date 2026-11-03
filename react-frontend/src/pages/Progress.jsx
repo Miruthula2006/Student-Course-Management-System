@@ -1,32 +1,33 @@
 import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext.jsx";
 import LogoutButton from "../components/LogoutButton.jsx";
-import { getCourseProgress, normalizeCourses } from "../utils/courseUtils.js";
+import api from "../services/api.js";
 
 const Progress = () => {
-    const { user } = useAuth();
-    const [student, setStudent] = useState(null);
-    const [courses, setCourses] = useState([]);
-
-    const load = () => {
-        const students = JSON.parse(localStorage.getItem("students") || "[]");
-        const current = user ? students.find((item) => item.email === user.email) : null;
-        setStudent(current || null);
-        setCourses(normalizeCourses(JSON.parse(localStorage.getItem("courses") || "[]")));
-    };
+    const [enrollments, setEnrollments] = useState([]);
+    const [progress, setProgress] = useState([]);
+    const [certificateCount, setCertificateCount] = useState(0);
+    const [error, setError] = useState("");
 
     useEffect(() => {
-        load();
-        window.addEventListener("studentDataChanged", load);
-        return () => window.removeEventListener("studentDataChanged", load);
-    }, [user]);
+        let active = true;
+        Promise.all([api.get("/api/v1/enrollments/mine"), api.get("/api/v1/progress/mine"), api.get("/api/v1/certificates/mine")])
+            .then(([enrollmentResponse, progressResponse, certificateResponse]) => {
+                if (!active) return;
+                setEnrollments(enrollmentResponse.data.enrollments || []);
+                setProgress(progressResponse.data.progress || []);
+                setCertificateCount(certificateResponse.data.certificates?.length || 0);
+            })
+            .catch((requestError) => {
+                if (active) setError(requestError.response?.data?.message || "Unable to load learning progress.");
+            });
+        return () => { active = false; };
+    }, []);
 
-    const enrolled = student?.enrolledCourses || [];
-    const enrolledCourses = courses.filter((course) => enrolled.includes(course.id));
-    const completedCount = enrolledCourses.filter((course) => student?.completedCourses?.includes(course.id)).length;
-    const overall = enrolledCourses.length ? Math.round(enrolledCourses.reduce((sum, course) => sum + getCourseProgress(student, course).percent, 0) / enrolledCourses.length) : 0;
+    const enrolledCourses = enrollments.map((item) => item.course).filter(Boolean);
+    const completedCount = enrollments.filter((item) => item.status === "completed").length;
+    const overall = progress.length ? Math.round(progress.reduce((sum, item) => sum + item.progressPercent, 0) / progress.length) : 0;
 
     return (
         <>
@@ -49,17 +50,21 @@ const Progress = () => {
                         <article className="box"><i className="fa-solid fa-chart-pie"></i><h2>{overall}%</h2><p>Overall Progress</p></article>
                         <article className="box"><i className="fa-solid fa-book-open"></i><h2>{enrolledCourses.length}</h2><p>Enrolled Courses</p></article>
                         <article className="box"><i className="fa-solid fa-circle-check"></i><h2>{completedCount}</h2><p>Completed Courses</p></article>
-                        <article className="box"><i className="fa-solid fa-award"></i><h2>{student?.certificates?.length || 0}</h2><p>Certificates</p></article>
+                        <article className="box"><i className="fa-solid fa-award"></i><h2>{certificateCount}</h2><p>Certificates</p></article>
                     </section>
                     <section className="course-card">
+                        {error && <p role="alert">{error}</p>}
                         <div className="section-heading-row"><div><h2>Course-by-Course Progress</h2><p>Every course now requires its learning resources to be completed.</p></div></div>
                         {enrolledCourses.length === 0 ? <p>No enrolled courses yet. <Link to="/courses">Browse courses</Link></p> : <div className="progress-course-list">
                             {enrolledCourses.map((course) => {
-                                const p = getCourseProgress(student, course);
-                                return <article className="progress-course" key={course.id}>
-                                    <div><span className="course-card-badge">{course.id}</span><h3>{course.title}</h3><small>{p.completedCount} of {p.total} resources completed</small></div>
-                                    <div className="progress-course-bar"><div className="learning-progress-track"><span style={{ width: `${p.percent}%` }} /></div><strong>{p.percent}%</strong></div>
-                                    <Link to={`/course/${encodeURIComponent(course.id)}`} className="secondary-action">Open</Link>
+                                const courseProgress = progress.find((item) => String(item.course?._id || item.course) === String(course._id || course.id));
+                                const percent = courseProgress?.progressPercent || 0;
+                                const completed = courseProgress?.completedLessons || 0;
+                                const total = courseProgress?.totalLessons || course.materials?.length || 0;
+                                return <article className="progress-course" key={course._id || course.id}>
+                                    <div><span className="course-card-badge">{course.courseCode}</span><h3>{course.courseName}</h3><small>{completed} of {total} lessons completed</small></div>
+                                    <div className="progress-course-bar"><div className="learning-progress-track"><span style={{ width: `${percent}%` }} /></div><strong>{percent}%</strong></div>
+                                    <Link to={`/course/${encodeURIComponent(course._id || course.id)}`} className="secondary-action">Open</Link>
                                 </article>;
                             })}
                         </div>}

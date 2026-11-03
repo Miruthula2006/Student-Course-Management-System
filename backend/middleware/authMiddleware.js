@@ -1,7 +1,8 @@
 
 const jwt = require("jsonwebtoken");
+const Student = require("../models/Student");
 
-function authenticateToken(req, res, next) {
+async function authenticateToken(req, res, next) {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -21,19 +22,44 @@ function authenticateToken(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (!process.env.JWT_SECRET) {
+      throw new Error("JWT_SECRET is not configured");
+    }
+
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET,
+      { algorithms: ["HS256"] }
+    );
+
+    const student = await Student.findById(decoded.sub)
+      .select("name email role")
+      .lean();
+
+    if (!student) {
+      return res.status(401).json({
+        success: false,
+        message: "Account is no longer available."
+      });
+    }
 
     req.user = {
-      id: decoded.sub,
-      email: decoded.email
+      id: String(student._id),
+      email: student.email,
+      name: student.name,
+      role: student.role
     };
 
-    next();
+    return next();
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired authentication token."
-    });
+    if (error.name === "JsonWebTokenError" || error.name === "TokenExpiredError" || error.name === "CastError") {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired authentication token."
+      });
+    }
+
+    return next(error);
   }
 }
 

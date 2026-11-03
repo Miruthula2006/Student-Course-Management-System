@@ -1,19 +1,29 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import PageCss from "../components/PageCss.jsx";
+import api from "../services/api.js";
 
 const Certificate = () => {
     const { certificateId } = useParams();
     const [certificate, setCertificate] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const students = JSON.parse(localStorage.getItem("students") || "[]");
-        const found = students.flatMap((student) => Array.isArray(student.certificates) ? student.certificates : [])
-            .find((item) => item.id === certificateId);
-        setCertificate(found || null);
+        let active = true;
+        api.get(`/api/v1/certificates/${encodeURIComponent(certificateId)}`)
+            .then((response) => {
+                if (active) setCertificate(response.data.certificate);
+            })
+            .catch(() => {
+                if (active) setCertificate(null);
+            })
+            .finally(() => {
+                if (active) setLoading(false);
+            });
+        return () => { active = false; };
     }, [certificateId]);
 
-    if (!certificate) return <div className="scms-centered-state"><h2>Certificate not found</h2><Link to="/my-courses" className="student-btn">Back to My Courses</Link></div>;
+    if (!certificate) return <div className="scms-centered-state"><h2>{loading ? "Loading certificate..." : "Certificate not found"}</h2><Link to="/my-courses" className="student-btn">Back to My Courses</Link></div>;
 
     return (
         <>
@@ -39,16 +49,16 @@ const Certificate = () => {
                         <p className="certificate-kicker">STUDENT COURSE MANAGEMENT SYSTEM</p>
                         <h1>Certificate of Completion</h1>
                         <p className="certificate-intro">This certificate is proudly presented to</p>
-                        <h2>{certificate.studentName}</h2>
+                        <h2>{certificate.student?.name}</h2>
                         <p className="certificate-intro">for successfully completing the course</p>
-                        <h3>{certificate.courseTitle}</h3>
+                        <h3>{certificate.course?.courseName}</h3>
                         <p className="certificate-text">The learner completed all required learning resources and successfully completed the course requirements.</p>
                         <div className="certificate-details">
-                            <span><strong>Student ID</strong>{certificate.studentId}</span>
-                            <span><strong>Instructor</strong>{certificate.instructor}</span>
-                            <span><strong>Issue Date</strong>{certificate.issueDate}</span>
+                            <span><strong>Student ID</strong>{certificate.student?.registerNumber || certificate.student?._id}</span>
+                            <span><strong>Instructor</strong>{certificate.course?.instructor || "SCMS"}</span>
+                            <span><strong>Issue Date</strong>{new Date(certificate.issuedAt).toLocaleDateString()}</span>
                         </div>
-                        <div className="certificate-footer"><span>Certificate ID: {certificate.id}</span><span>SCMS</span></div>
+                        <div className="certificate-footer"><span>Certificate ID: {certificate.certificateCode}</span><span>SCMS</span></div>
                     </div>
                 </section>
             </div>

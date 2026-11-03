@@ -1,6 +1,7 @@
 import { useCourses } from "../context/CourseContext";
 import { Link } from "react-router-dom";
 import LogoutButton from "../components/LogoutButton.jsx";
+import api from "../services/api.js";
 
 import PageCss from "../components/PageCss.jsx";
 import CourseCard from "../components/CourseCard.jsx";
@@ -51,142 +52,18 @@ const Courses = () => {
 
 
     // Student enrollment logic
-    const handleEnroll = (course) => {
-
-        const loggedInUser =
-            JSON.parse(
-                localStorage.getItem("loggedInUser")
-            );
-
-
-        if (!loggedInUser) {
-
-            alert("Please login first.");
-
+    const handleEnroll = async (course) => {
+        if (!sessionStorage.getItem("token")) {
+            window.location.assign("/student-login");
             return;
         }
 
-
-        const students =
-            JSON.parse(
-                localStorage.getItem("students")
-            ) || [];
-
-
-        const studentIndex =
-            students.findIndex(
-                student =>
-                    student.id === loggedInUser.id
-            );
-
-
-        if (studentIndex === -1) {
-
-            alert("Student not found.");
-
-            return;
+        try {
+            await api.post("/api/v1/enrollments", { courseId: course.id });
+            window.alert("Course enrolled successfully.");
+        } catch (requestError) {
+            window.alert(requestError.response?.data?.message || "Unable to enroll in this course.");
         }
-
-
-        const student =
-            students[studentIndex];
-
-
-        if (!Array.isArray(student.enrolledCourses)) {
-
-            student.enrolledCourses = [];
-
-        }
-
-
-        if (!Array.isArray(student.completedCourses)) {
-
-            student.completedCourses = [];
-
-        }
-
-
-        if (!Array.isArray(student.notifications)) {
-
-            student.notifications = [];
-
-        }
-
-
-        if (!Array.isArray(student.enrollments)) {
-
-            student.enrollments = [];
-
-        }
-
-
-        if (
-            student.enrolledCourses.includes(course.id)
-        ) {
-
-            alert(
-                "Already enrolled in this course."
-            );
-
-            return;
-        }
-
-
-        // Add course to student's enrolled courses
-        student.enrolledCourses.push(course.id);
-
-
-        // Add enrollment record
-        student.enrollments.push({
-
-            courseId: course.id,
-
-            enrollmentDate:
-                new Date().toLocaleDateString(),
-
-            status: "Active"
-
-        });
-
-
-        // Add notification
-        student.notifications.unshift({
-
-            id: "NT_" + Date.now(),
-
-            message:
-                `Successfully enrolled in ${course.title}`,
-
-            date:
-                new Date().toLocaleDateString(),
-
-            time:
-                new Date().toLocaleTimeString()
-
-        });
-
-
-        students[studentIndex] = student;
-
-
-        // Save updated student information
-        localStorage.setItem(
-            "students",
-            JSON.stringify(students)
-        );
-
-
-        // Update logged-in user
-        localStorage.setItem(
-            "loggedInUser",
-            JSON.stringify(student)
-        );
-
-
-        alert(
-            "Course enrolled successfully."
-        );
-
     };
 
 

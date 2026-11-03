@@ -11,6 +11,7 @@ const {
 
 const validateCourse = require("../middleware/courseValidation");
 const authenticateToken = require("../middleware/authMiddleware");
+const authorizeRoles = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
@@ -19,8 +20,8 @@ router.get("/", getCourses);
 router.get("/:id", getCourse);
 
 // Protected routes: valid JWT required
-router.post("/", authenticateToken, validateCourse, addCourse);
-router.put("/:id", authenticateToken, editCourse);
-router.delete("/:id", authenticateToken, removeCourse);
+router.post("/", authenticateToken, authorizeRoles("admin"), validateCourse, addCourse);
+router.put("/:id", authenticateToken, authorizeRoles("admin"), editCourse);
+router.delete("/:id", authenticateToken, authorizeRoles("admin"), removeCourse);
 
 module.exports = router;
