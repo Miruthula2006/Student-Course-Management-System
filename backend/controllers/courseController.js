@@ -1,27 +1,37 @@
 
-const mongoose = require("mongoose");
+const isObjectId = require("../utils/objectId");
 const Course = require("../models/Course");
 const Enrollment = require("../models/Enrollment");
 const LearningProgress = require("../models/LearningProgress");
 const Certificate = require("../models/Certificate");
+const LearningResource = require("../models/LearningResource");
 
 function invalidCourseId(id) {
-  return !mongoose.isValidObjectId(id);
+  return !isObjectId(id);
 }
 
-function serializeCourse(course) {
-  return { ...course, id: String(course._id) };
+function serializeCourse(course, resourceCount = 0) {
+  const safeCourse = { ...course };
+  const id = String(safeCourse._id);
+  delete safeCourse._id;
+  delete safeCourse.materials;
+  return { ...safeCourse, id, resourceCount };
 }
 
 // GET /api/courses
 const getCourses = async (req, res, next) => {
   try {
-    const courses = await Course.find().sort({ createdAt: -1 }).lean();
+    const courses = await Course.find().select("-materials").sort({ createdAt: -1 }).lean();
+    const counts = await LearningResource.aggregate([
+      { $match: { course: { $in: courses.map((course) => course._id) } } },
+      { $group: { _id: "$course", count: { $sum: 1 } } }
+    ]);
+    const resourceCounts = new Map(counts.map((item) => [String(item._id), item.count]));
 
     res.status(200).json({
       success: true,
       count: courses.length,
-      data: courses.map(serializeCourse)
+      data: courses.map((course) => serializeCourse(course, resourceCounts.get(String(course._id)) || 0))
     });
   } catch (error) {
     next(error);
@@ -38,7 +48,7 @@ const getCourse = async (req, res, next) => {
       });
     }
 
-    const course = await Course.findById(req.params.id).lean();
+    const course = await Course.findById(req.params.id).select("-materials").lean();
 
     if (!course) {
       return res.status(404).json({
@@ -47,9 +57,10 @@ const getCourse = async (req, res, next) => {
       });
     }
 
+    const resourceCount = await LearningResource.countDocuments({ course: course._id });
     res.status(200).json({
       success: true,
-      data: serializeCourse(course)
+      data: serializeCourse(course, resourceCount)
     });
   } catch (error) {
     next(error);
@@ -59,7 +70,7 @@ const getCourse = async (req, res, next) => {
 // POST /api/courses
 const addCourse = async (req, res, next) => {
   try {
-    const newCourse = await Course.create(req.body);
+    const newCourse = await Course.create(req.validatedCourse);
 
     res.status(201).json({
       success: true,
@@ -81,16 +92,9 @@ const editCourse = async (req, res, next) => {
       });
     }
 
-    const updates = { ...req.body };
-    delete updates._id;
-    delete updates.id;
-    if (Object.keys(updates).length === 0) {
-      return res.status(400).json({ success: false, message: "No course fields supplied" });
-    }
-
     const updatedCourse = await Course.findByIdAndUpdate(
       req.params.id,
-      { $set: updates },
+      { $set: req.validatedCourse },
       { returnDocument: "after", runValidators: true }
     );
 

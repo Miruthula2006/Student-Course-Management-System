@@ -3,7 +3,7 @@ import PageCss from "../components/PageCss.jsx";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth.js";
 import LogoutButton from "../components/LogoutButton.jsx";
-import { useCourses } from "../context/CourseContext.jsx";
+import { useCourses } from "../context/useCourses.js";
 import api from "../services/api.js";
 
 const AdminDashboard = () => {
@@ -30,7 +30,10 @@ const AdminDashboard = () => {
                     date: enrollment.enrolledAt ? new Date(enrollment.enrolledAt).toLocaleDateString() : ""
                 })));
             })
-            .catch((requestError) => console.error("Unable to load dashboard data:", requestError));
+            .catch((requestError) => console.error(
+                "Unable to load dashboard data",
+                { status: requestError.response?.status }
+            ));
         return () => { active = false; };
     }, [user]);
 
@@ -98,6 +101,13 @@ const AdminDashboard = () => {
                             <Link to="/view-enrollments">
                                 <i className="fa-solid fa-user-check"></i>
                                 Enrollments
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link to="/admin-chat">
+                                <i className="fa-solid fa-comments"></i>
+                                Chat
                             </Link>
                         </li>
 

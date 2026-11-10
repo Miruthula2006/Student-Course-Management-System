@@ -1,32 +1,28 @@
 
 const bcrypt = require("bcryptjs");
+const { validateStudentRegistration, isValidEmail } = require("../utils/validation");
 const Student = require("../models/Student");
 
-async function registerStudent({
-  name,
-  registerNumber,
-  email,
-  phone,
-  department,
-  year,
-  password
-}) {
-  const normalizedEmail = email.trim().toLowerCase();
-  const normalizedRegisterNumber = registerNumber.trim().toUpperCase();
-
-  if (
-    typeof password !== "string" ||
-    password.length < 12 ||
-    Buffer.byteLength(password, "utf8") > 72
-  ) {
-    const error = new Error("Password must be at least 12 characters and no more than 72 bytes");
+async function registerStudent(input) {
+  const validation = validateStudentRegistration(input);
+  if (validation.error) {
+    const error = new Error(validation.error);
     error.statusCode = 400;
     throw error;
   }
+  const {
+    name,
+    registerNumber,
+    email,
+    phone,
+    department,
+    year,
+    password
+  } = validation.value;
 
   // Check whether the email is already registered
   const existingEmail = await Student.findOne({
-    email: normalizedEmail
+    email
   });
 
   if (existingEmail) {
@@ -37,7 +33,7 @@ async function registerStudent({
 
   // Check whether the register number is already registered
   const existingRegisterNumber = await Student.findOne({
-    registerNumber: normalizedRegisterNumber
+    registerNumber
   });
 
   if (existingRegisterNumber) {
@@ -52,10 +48,10 @@ async function registerStudent({
   try {
     const student = await Student.create({
       name: name.trim(),
-      registerNumber: normalizedRegisterNumber,
-      email: normalizedEmail,
-      phone: phone.trim(),
-      department: department.trim(),
+      registerNumber,
+      email,
+      phone,
+      department,
       year,
       passwordHash,
       role: "student"
@@ -92,16 +88,25 @@ async function registerStudent({
 }
 
 async function loginStudent({ email, password }) {
-  const normalizedEmail = email.trim().toLowerCase();
+  if (
+    !isValidEmail(email) ||
+    typeof password !== "string" ||
+    password.length > 72 ||
+    Buffer.byteLength(password, "utf8") > 72
+  ) {
+    const error = new Error("Invalid email or password");
+    error.statusCode = 401;
+    throw error;
+  }
 
   const student = await Student.findOne({
-    email: normalizedEmail
+    email: email.trim().toLowerCase()
   }).select("+passwordHash");
 
-  if (
-    !student ||
-    !(await bcrypt.compare(password, student.passwordHash))
-  ) {
+  const passwordMatches = student
+    ? await bcrypt.compare(password, student.passwordHash)
+    : await bcrypt.hash(password, 12).then(() => false);
+  if (!passwordMatches) {
     const error = new Error("Invalid email or password");
     error.statusCode = 401;
     throw error;

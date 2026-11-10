@@ -1,7 +1,7 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const Notification = require("../models/Notification");
 const authenticateToken = require("../middleware/authMiddleware");
+const isObjectId = require("../utils/objectId");
 
 const router = express.Router();
 router.use(authenticateToken);
@@ -20,7 +20,7 @@ router.get("/", async (req, res, next) => {
 
 router.patch("/:id/read", async (req, res, next) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
+    if (!isObjectId(req.params.id)) {
       return res.status(400).json({ success: false, message: "Invalid notification ID" });
     }
     const notification = await Notification.findOneAndUpdate(

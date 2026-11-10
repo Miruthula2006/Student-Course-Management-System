@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link } from "react-router-dom";
-import LogoutButton from "../components/LogoutButton.jsx";
+import StudentSidebar from "../components/StudentSidebar.jsx";
 import api from "../services/api.js";
 
 const Progress = () => {
@@ -27,23 +27,16 @@ const Progress = () => {
 
     const enrolledCourses = enrollments.map((item) => item.course).filter(Boolean);
     const completedCount = enrollments.filter((item) => item.status === "completed").length;
-    const overall = progress.length ? Math.round(progress.reduce((sum, item) => sum + item.progressPercent, 0) / progress.length) : 0;
+    const overall = enrolledCourses.length ? Math.round(enrolledCourses.reduce((sum, course) => {
+        const courseProgress = progress.find((item) => String(item.course?._id || item.course) === String(course._id || course.id));
+        return sum + (courseProgress?.progressPercent || 0);
+    }, 0) / enrolledCourses.length) : 0;
 
     return (
         <>
             <PageCss href="/css/style.css" /><PageCss href="/css/dashboard.css" />
             <div className="container">
-                <aside className="sidebar">
-                    <h2><i className="fa-solid fa-graduation-cap"></i> SCMS</h2><p>Student Course Management</p>
-                    <ul>
-                        <li><Link to="/student-dashboard"><i className="fa-solid fa-house"></i>Dashboard</Link></li>
-                        <li><Link to="/courses"><i className="fa-solid fa-book"></i>Courses</Link></li>
-                        <li><Link to="/my-courses"><i className="fa-solid fa-graduation-cap"></i>My Courses</Link></li>
-                        <li className="active"><Link to="/progress"><i className="fa-solid fa-chart-line"></i>Progress</Link></li>
-                        <li><Link to="/notifications"><i className="fa-solid fa-bell"></i>Notifications</Link></li>
-                        <li><LogoutButton /></li>
-                    </ul>
-                </aside>
+                <StudentSidebar />
                 <main className="main-content">
                     <header className="topbar"><h1>Learning Progress</h1><p>Track lessons, course completion, and certificates.</p></header>
                     <section className="cards">
@@ -58,11 +51,11 @@ const Progress = () => {
                         {enrolledCourses.length === 0 ? <p>No enrolled courses yet. <Link to="/courses">Browse courses</Link></p> : <div className="progress-course-list">
                             {enrolledCourses.map((course) => {
                                 const courseProgress = progress.find((item) => String(item.course?._id || item.course) === String(course._id || course.id));
-                                const percent = courseProgress?.progressPercent || 0;
+                                const total = courseProgress?.totalLessons ?? course.resourceCount ?? 0;
                                 const completed = courseProgress?.completedLessons || 0;
-                                const total = courseProgress?.totalLessons || course.materials?.length || 0;
+                                const percent = total ? Math.round((completed / total) * 100) : 0;
                                 return <article className="progress-course" key={course._id || course.id}>
-                                    <div><span className="course-card-badge">{course.courseCode}</span><h3>{course.courseName}</h3><small>{completed} of {total} lessons completed</small></div>
+                                    <div><span className="course-card-badge">{course.courseCode}</span><h3>{course.courseName}</h3><small>{total ? `${completed} of ${total} resources completed` : "No learning resources have been added to this course yet."}</small></div>
                                     <div className="progress-course-bar"><div className="learning-progress-track"><span style={{ width: `${percent}%` }} /></div><strong>{percent}%</strong></div>
                                     <Link to={`/course/${encodeURIComponent(course._id || course.id)}`} className="secondary-action">Open</Link>
                                 </article>;

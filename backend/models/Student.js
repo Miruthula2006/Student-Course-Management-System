@@ -1,12 +1,22 @@
 
 const mongoose = require("mongoose");
+const {
+  namePattern,
+  isValidEmail,
+  phonePattern,
+  registerNumberPattern,
+  supportedYears
+} = require("../utils/validation");
 
 const studentSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
+      minlength: 2,
+      maxlength: 100,
+      match: namePattern
     },
 
     registerNumber: {
@@ -17,7 +27,9 @@ const studentSchema = new mongoose.Schema(
       unique: true,
       sparse: true,
       trim: true,
-      uppercase: true
+      uppercase: true,
+      maxlength: 30,
+      match: registerNumberPattern
     },
 
     email: {
@@ -25,7 +37,9 @@ const studentSchema = new mongoose.Schema(
       required: true,
       unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
+      maxlength: 254,
+      validate: isValidEmail
     },
 
     phone: {
@@ -33,7 +47,8 @@ const studentSchema = new mongoose.Schema(
       required: function () {
         return this.role === "student";
       },
-      trim: true
+      trim: true,
+      match: phonePattern
     },
 
     department: {
@@ -41,7 +56,8 @@ const studentSchema = new mongoose.Schema(
       required: function () {
         return this.role === "student";
       },
-      trim: true
+      trim: true,
+      maxlength: 120
     },
 
     year: {
@@ -49,13 +65,15 @@ const studentSchema = new mongoose.Schema(
       required: function () {
         return this.role === "student";
       },
-      enum: ["I", "II", "III"]
+      enum: [...supportedYears]
     },
 
     passwordHash: {
       type: String,
       required: true,
-      select: false
+      select: false,
+      minlength: 60,
+      maxlength: 60
     },
 
     role: {

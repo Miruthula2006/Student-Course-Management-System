@@ -1,5 +1,18 @@
 const mongoose = require("mongoose");
 
+function isHttpUrl(value) {
+  if (!value) return true;
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol) &&
+      Boolean(url.hostname) &&
+      !url.username &&
+      !url.password;
+  } catch {
+    return false;
+  }
+}
+
 const courseSchema = new mongoose.Schema(
   {
     courseName: {
@@ -31,6 +44,7 @@ const courseSchema = new mongoose.Schema(
     level: {
       type: String,
       trim: true,
+      maxlength: 50,
       default: "Beginner"
     },
     category: {
@@ -50,10 +64,17 @@ const courseSchema = new mongoose.Schema(
       default: "",
       maxlength: 5000
     },
-    videoUrl: { type: String, trim: true, default: "" },
-    pdfUrl: { type: String, trim: true, default: "" },
-    practiceUrl: { type: String, trim: true, default: "" },
-    materials: { type: [mongoose.Schema.Types.Mixed], default: [] }
+    videoUrl: { type: String, trim: true, maxlength: 2048, validate: isHttpUrl, default: "" },
+    pdfUrl: { type: String, trim: true, maxlength: 2048, validate: isHttpUrl, default: "" },
+    practiceUrl: { type: String, trim: true, maxlength: 2048, validate: isHttpUrl, default: "" },
+    materials: {
+      type: [mongoose.Schema.Types.Mixed],
+      default: [],
+      validate: {
+        validator: (materials) => Array.isArray(materials) && materials.length <= 100,
+        message: "A course can contain at most 100 legacy materials"
+      }
+    }
   },
   { timestamps: true }
 );

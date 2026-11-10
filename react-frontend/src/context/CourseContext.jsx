@@ -1,39 +1,37 @@
 
 import {
-  createContext,
-  useContext,
+  useCallback,
   useEffect,
   useState
 } from "react";
 
 import api from "../services/api";
-
-const CourseContext = createContext(null);
+import { CourseContext } from "./courseContextData.js";
 
 export function CourseProvider({ children }) {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  async function fetchCourses() {
+  const fetchCourses = useCallback(async () => {
     try {
       setLoading(true);
 
       const response = await api.get("/api/v1/courses");
 
-      setCourses(response.data.data);
+      setCourses(response.data.data || []);
       setError(null);
-    } catch (error) {
-      console.error("Failed to fetch courses:", error);
+    } catch (fetchError) {
+      console.error("Failed to fetch courses", { status: fetchError.response?.status });
       setError("Unable to load courses.");
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    fetchCourses();
-  }, []);
+    void fetchCourses();
+  }, [fetchCourses]);
 
   async function addCourse(course) {
     const response = await api.post(
@@ -55,7 +53,7 @@ export function CourseProvider({ children }) {
 
     setCourses((previousCourses) =>
       previousCourses.map((course) =>
-        course.id === id
+        String(course.id ?? course._id) === String(id)
           ? response.data.data
           : course
       )
@@ -67,7 +65,7 @@ export function CourseProvider({ children }) {
 
     setCourses((previousCourses) =>
       previousCourses.filter(
-        (course) => course.id !== id
+        (course) => String(course.id ?? course._id) !== String(id)
       )
     );
   }
@@ -87,8 +85,4 @@ export function CourseProvider({ children }) {
       {children}
     </CourseContext.Provider>
   );
-}
-
-export function useCourses() {
-  return useContext(CourseContext);
 }

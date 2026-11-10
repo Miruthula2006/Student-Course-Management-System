@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 
 const connectDB = require("../config/db");
 const Student = require("../models/Student");
+const { isValidEmail, namePattern } = require("../utils/validation");
 
 async function createAdmin() {
   const { ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD } = process.env;
@@ -23,6 +24,14 @@ async function createAdmin() {
   }
 
   const normalizedEmail = ADMIN_EMAIL.trim().toLowerCase();
+  if (
+    !isValidEmail(normalizedEmail) ||
+    ADMIN_NAME.trim().length < 2 ||
+    ADMIN_NAME.trim().length > 100 ||
+    !namePattern.test(ADMIN_NAME.trim())
+  ) {
+    throw new Error("ADMIN_NAME and ADMIN_EMAIL must be valid.");
+  }
 
   await connectDB();
 
@@ -54,7 +63,6 @@ async function createAdmin() {
   });
 
   console.log("Administrator account created successfully!");
-  console.log("Admin email:", normalizedEmail);
 }
 
 createAdmin()

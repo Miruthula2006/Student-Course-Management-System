@@ -1,4 +1,5 @@
 const Student = require("../models/Student");
+const { isRecord, namePattern, phonePattern } = require("../utils/validation");
 
 async function getProfile(req, res, next) {
   try {
@@ -14,14 +15,20 @@ async function getProfile(req, res, next) {
 
 async function updateProfile(req, res, next) {
   try {
+    if (!isRecord(req.body)) {
+      return res.status(400).json({ success: false, message: "Profile fields are required" });
+    }
+    if (Object.keys(req.body).some((field) => !["name", "phone"].includes(field))) {
+      return res.status(400).json({ success: false, message: "Profile update contains unsupported fields" });
+    }
     const { name, phone } = req.body;
     const updates = {};
     if (name !== undefined) {
-      if (typeof name !== "string" || !name.trim()) return res.status(400).json({ success: false, message: "Valid name is required" });
+      if (typeof name !== "string" || name.trim().length < 2 || name.trim().length > 100 || !namePattern.test(name.trim())) return res.status(400).json({ success: false, message: "Valid name is required" });
       updates.name = name.trim();
     }
     if (phone !== undefined) {
-      if (typeof phone !== "string" || !/^\+?[0-9]{10,15}$/.test(phone.trim())) return res.status(400).json({ success: false, message: "Valid phone number is required" });
+      if (typeof phone !== "string" || !phonePattern.test(phone.trim())) return res.status(400).json({ success: false, message: "Valid phone number is required" });
       updates.phone = phone.trim();
     }
     if (Object.keys(updates).length === 0) return res.status(400).json({ success: false, message: "No profile fields supplied" });

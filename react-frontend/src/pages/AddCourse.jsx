@@ -2,7 +2,7 @@ import { useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import LogoutButton from "../components/LogoutButton.jsx";
-import { useCourses } from "../context/CourseContext.jsx";
+import { useCourses } from "../context/useCourses.js";
 
 const AddCourse = () => {
     const navigate = useNavigate();
@@ -102,7 +102,7 @@ const AddCourse = () => {
             navigate("/manage-courses");
 
         } catch (error) {
-            console.error("Error adding course:", error);
+            console.error("Error adding course", { status: error.response?.status });
 
             setMessage("Unable to add course.");
 
@@ -183,6 +183,13 @@ const AddCourse = () => {
                             <Link to="/view-enrollments">
                                 <i className="fa-solid fa-user-check"></i>
                                 Enrollments
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link to="/admin-chat">
+                                <i className="fa-solid fa-comments"></i>
+                                Chat
                             </Link>
                         </li>
 

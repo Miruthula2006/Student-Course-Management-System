@@ -98,6 +98,13 @@ const ViewEnrollments = () => {
                         </li>
 
                         <li>
+                            <Link to="/admin-chat">
+                                <i className="fa-solid fa-comments"></i>
+                                Chat
+                            </Link>
+                        </li>
+
+                        <li>
                             <LogoutButton admin />
                         </li>
 

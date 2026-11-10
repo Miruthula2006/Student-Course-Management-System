@@ -21,7 +21,7 @@ router.get("/:id", getCourse);
 
 // Protected routes: valid JWT required
 router.post("/", authenticateToken, authorizeRoles("admin"), validateCourse, addCourse);
-router.put("/:id", authenticateToken, authorizeRoles("admin"), editCourse);
+router.put("/:id", authenticateToken, authorizeRoles("admin"), validateCourse, editCourse);
 router.delete("/:id", authenticateToken, authorizeRoles("admin"), removeCourse);
 
 module.exports = router;

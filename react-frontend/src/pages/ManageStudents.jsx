@@ -60,12 +60,16 @@ const ManageStudents = () => {
 
     const handleView = (student) => {
         const studentId =
+            student._id ||
             student.id ||
             student.studentId;
 
-        navigate(
-            `/student-details?studentId=${encodeURIComponent(studentId)}`
-        );
+        if (!studentId) {
+            setError("This student record does not include a valid database ID.");
+            return;
+        }
+
+        navigate(`/student-details/${encodeURIComponent(studentId)}`);
     };
 
     return (
@@ -124,6 +128,13 @@ const ManageStudents = () => {
                             <Link to="/view-enrollments">
                                 <i className="fa-solid fa-user-check"></i>
                                 Enrollments
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link to="/admin-chat">
+                                <i className="fa-solid fa-comments"></i>
+                                Chat
                             </Link>
                         </li>
 

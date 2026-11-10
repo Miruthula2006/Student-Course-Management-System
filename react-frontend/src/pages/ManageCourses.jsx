@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../auth/useAuth.js";
 import LogoutButton from "../components/LogoutButton.jsx";
-import { useCourses } from "../context/CourseContext.jsx";
+import { useCourses } from "../context/useCourses.js";
 
 const ManageCourses = () => {
-    const { user } = useAuth();
     const navigate = useNavigate();
 
     const {
@@ -20,8 +18,8 @@ const ManageCourses = () => {
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        fetchCourses();
-    }, [user]);
+        void fetchCourses();
+    }, [fetchCourses]);
 
     const filteredCourses = courses.filter((course) => {
         const search = searchTerm.toLowerCase();
@@ -44,7 +42,8 @@ const ManageCourses = () => {
         try {
             await deleteCourse(courseId);
             alert("Course deleted successfully.");
-        } catch (error) {
+        } catch (deleteError) {
+            console.error("Failed to delete course", { status: deleteError.response?.status });
             alert("Failed to delete course.");
         }
     };
@@ -109,6 +108,13 @@ const ManageCourses = () => {
                             <Link to="/view-enrollments">
                                 <i className="fa-solid fa-user-check"></i>
                                 Enrollments
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link to="/admin-chat">
+                                <i className="fa-solid fa-comments"></i>
+                                Chat
                             </Link>
                         </li>
 
@@ -247,7 +253,7 @@ const ManageCourses = () => {
                                                 </td>
 
                                                 <td>
-                                                    {course.materials?.length || 0} learning resources
+                                                    {course.resourceCount ?? course.materials?.length ?? 0} learning resources
                                                 </td>
 
                                                 <td>

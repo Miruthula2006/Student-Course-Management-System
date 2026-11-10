@@ -1,0 +1,57 @@
+ Front End/js/auth.js                          |  828 +-------------------
+ Front End/js/main.js                          |  107 +--
+ Front End/manage-students.html                |   48 +-
+ Front End/student-details.html                |    4 +-
+ README.md                                     |    7 +
+ backend/.env.example                          |    2 +-
+ backend/config/socket.js                      |   70 +-
+ backend/controllers/courseController.js       |   38 +-
+ backend/controllers/profileController.js      |   11 +-
+ backend/controllers/studentController.js      |   61 +-
+ backend/data/courses.js                       |    6 +-
+ backend/middleware/authValidation.js          |  112 +--
+ backend/middleware/courseValidation.js        |  173 +++--
+ backend/middleware/errorMiddleware.js         |   44 +-
+ backend/middleware/notFoundMiddleware.js      |    2 +-
+ backend/models/Course.js                      |   29 +-
+ backend/models/LearningProgress.js            |   12 +-
+ backend/models/Message.js                     |    7 +-
+ backend/models/Student.js                     |   32 +-
+ backend/package.json                          |    4 +-
+ backend/routes/authRoutes.js                  |   18 +-
+ backend/routes/certificateRoutes.js           |    7 +-
+ backend/routes/courseRoutes.js                |    2 +-
+ backend/routes/enrollmentRoutes.js            |   90 ++-
+ backend/routes/learningProgressRoutes.js      |   80 +-
+ backend/routes/messageRoutes.js               |   62 +-
+ backend/routes/notificationRoutes.js          |    4 +-
+ backend/scripts/createAdmin.js                |   10 +-
+ backend/server.js                             |   29 +-
+ backend/services/authService.js               |   65 +-
+ docs/api-verification.md                      |   13 +-
+ docs/database-schema.md                       |    2 +-
+ mock-api/db.json                              |    6 +-
+ react-frontend/eslint.config.js               |    8 +-
+ react-frontend/public/legacy/js/auth.js       | 1027 -------------------------
+ react-frontend/public/legacy/js/main.js       |   62 +-
+ react-frontend/src/App.jsx                    |   17 +
+ react-frontend/src/auth/AuthContext.jsx       |   11 +-
+ react-frontend/src/components/Chat.jsx        |  183 +++--
+ react-frontend/src/components/CourseCard.jsx  |    2 +-
+ react-frontend/src/context/CourseContext.jsx  |   28 +-
+ react-frontend/src/pages/AddCourse.jsx        |   11 +-
+ react-frontend/src/pages/AdminDashboard.jsx   |   14 +-
+ react-frontend/src/pages/CourseDetails.jsx    |  158 ++--
+ react-frontend/src/pages/Courses.jsx          |  100 +--
+ react-frontend/src/pages/EditCourse.jsx       |  219 ++++--
+ react-frontend/src/pages/ForgotPassword.jsx   |  124 +--
+ react-frontend/src/pages/ManageCourses.jsx    |   20 +-
+ react-frontend/src/pages/ManageStudents.jsx   |   17 +-
+ react-frontend/src/pages/MyCourses.jsx        |   35 +-
+ react-frontend/src/pages/Notifications.jsx    |   67 +-
+ react-frontend/src/pages/Progress.jsx         |   25 +-
+ react-frontend/src/pages/Register.jsx         |   12 +
+ react-frontend/src/pages/StudentDashboard.jsx |  187 +++--
+ react-frontend/src/pages/StudentDetails.jsx   |   50 +-
+ react-frontend/src/pages/ViewEnrollments.jsx  |    7 +
+ 56 files changed, 1373 insertions(+), 2996 deletions(-)

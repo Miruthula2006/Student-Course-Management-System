@@ -1,6 +1,5 @@
-import { useCourses } from "../context/CourseContext";
-import { Link } from "react-router-dom";
-import LogoutButton from "../components/LogoutButton.jsx";
+import { useCourses } from "../context/useCourses.js";
+import StudentSidebar from "../components/StudentSidebar.jsx";
 import api from "../services/api.js";
 
 import PageCss from "../components/PageCss.jsx";
@@ -81,100 +80,7 @@ const Courses = () => {
                     SIDEBAR
                 ========================== */}
 
-                <aside className="sidebar">
-
-                    <h2>
-
-                        <i className="fa-solid fa-graduation-cap"></i>
-
-                        SCMS
-
-                    </h2>
-
-
-                    <p>
-                        Student Course Management
-                    </p>
-
-
-                    <ul>
-
-
-                        <li>
-
-                            <Link to="/student-dashboard">
-
-                                <i className="fa-solid fa-house"></i>
-
-                                Dashboard
-
-                            </Link>
-
-                        </li>
-
-
-                        <li className="active">
-
-                            <Link to="/courses">
-
-                                <i className="fa-solid fa-book"></i>
-
-                                Courses
-
-                            </Link>
-
-                        </li>
-
-
-                        <li>
-
-                            <Link to="/my-courses">
-
-                                <i className="fa-solid fa-graduation-cap"></i>
-
-                                My Courses
-
-                            </Link>
-
-                        </li>
-
-
-                        <li>
-
-                            <Link to="/progress">
-
-                                <i className="fa-solid fa-chart-line"></i>
-
-                                Progress
-
-                            </Link>
-
-                        </li>
-
-
-                        <li>
-
-                            <Link to="/notifications">
-
-                                <i className="fa-solid fa-bell"></i>
-
-                                Notifications
-
-                            </Link>
-
-                        </li>
-
-
-                        <li>
-
-                            <LogoutButton />
-
-                        </li>
-
-
-                    </ul>
-
-                </aside>
+                <StudentSidebar />
 
 
                 {/* =========================

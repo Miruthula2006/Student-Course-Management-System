@@ -476,7 +476,7 @@ function initializeDefaultCourses(){
             duration: "12 Weeks",
             level: "Beginner",
             description: "Learn AI fundamentals, intelligent agents, and problem-solving techniques.",
-            instructor: "Dr. Arun"
+            instructor: "Sample Instructor 01"
         },
 
         {
@@ -486,7 +486,7 @@ function initializeDefaultCourses(){
             duration: "10 Weeks",
             level: "Intermediate",
             description: "Build predictive models using supervised and unsupervised learning.",
-            instructor: "Dr. Priya"
+            instructor: "Sample Instructor 02"
         },
 
         {
@@ -496,7 +496,7 @@ function initializeDefaultCourses(){
             duration: "8 Weeks",
             level: "Beginner",
             description: "Master Python programming from basics to advanced concepts.",
-            instructor: "Prof. Karthik"
+            instructor: "Sample Instructor 03"
         },
 
         {
@@ -506,7 +506,7 @@ function initializeDefaultCourses(){
             duration: "10 Weeks",
             level: "Beginner",
             description: "Learn HTML, CSS, JavaScript and responsive web development.",
-            instructor: "Prof. Meena"
+            instructor: "Sample Instructor 04"
         },
 
         {
@@ -516,7 +516,7 @@ function initializeDefaultCourses(){
             duration: "10 Weeks",
             level: "Intermediate",
             description: "Develop object-oriented applications using Java programming.",
-            instructor: "Dr. Ravi"
+            instructor: "Sample Instructor 05"
         },
 
         {
@@ -526,7 +526,7 @@ function initializeDefaultCourses(){
             duration: "8 Weeks",
             level: "Beginner",
             description: "Understand programming concepts using the C language.",
-            instructor: "Prof. Kumar"
+            instructor: "Sample Instructor 06"
         },
 
         {
@@ -536,7 +536,7 @@ function initializeDefaultCourses(){
             duration: "8 Weeks",
             level: "Intermediate",
             description: "Build object-oriented applications using C++.",
-            instructor: "Dr. Suresh"
+            instructor: "Sample Instructor 07"
         },
 
         {
@@ -546,7 +546,7 @@ function initializeDefaultCourses(){
             duration: "10 Weeks",
             level: "Intermediate",
             description: "Learn arrays, stacks, queues, linked lists and trees.",
-            instructor: "Dr. Anand"
+            instructor: "Sample Instructor 08"
         },
 
         {
@@ -556,7 +556,7 @@ function initializeDefaultCourses(){
             duration: "8 Weeks",
             level: "Beginner",
             description: "Understand relational databases, SQL and normalization.",
-            instructor: "Prof. Lakshmi"
+            instructor: "Sample Instructor 09"
         },
 
         {
@@ -566,7 +566,7 @@ function initializeDefaultCourses(){
             duration: "6 Weeks",
             level: "Beginner",
             description: "Learn SQL queries, joins and database operations.",
-            instructor: "Prof. Divya"
+            instructor: "Sample Instructor 10"
         },
 
         {
@@ -576,7 +576,7 @@ function initializeDefaultCourses(){
             duration: "8 Weeks",
             level: "Intermediate",
             description: "Learn cloud services, virtualization, deployment models and cloud platforms.",
-            instructor: "Dr. Naveen"
+            instructor: "Sample Instructor 11"
         },
 
         {
@@ -586,7 +586,7 @@ function initializeDefaultCourses(){
             duration: "10 Weeks",
             level: "Advanced",
             description: "Understand cyber threats, network security, ethical hacking and data protection.",
-            instructor: "Dr. Vishal"
+            instructor: "Sample Instructor 12"
         },
 
         {
@@ -596,7 +596,7 @@ function initializeDefaultCourses(){
             duration: "8 Weeks",
             level: "Intermediate",
             description: "Analyze datasets, create reports and gain business insights using analytical tools.",
-            instructor: "Dr. Sneha"
+            instructor: "Sample Instructor 13"
         },
 
         {
@@ -606,7 +606,7 @@ function initializeDefaultCourses(){
             duration: "12 Weeks",
             level: "Advanced",
             description: "Explore neural networks, computer vision and deep learning applications.",
-            instructor: "Dr. Rahul"
+            instructor: "Sample Instructor 14"
         },
 
         {
@@ -616,7 +616,7 @@ function initializeDefaultCourses(){
             duration: "6 Weeks",
             level: "Beginner",
             description: "Design attractive, user-friendly interfaces and improve user experience principles.",
-            instructor: "Prof. Asha"
+            instructor: "Sample Instructor 15"
         }
 
     ];
@@ -644,10 +644,10 @@ function initializeDefaultStudents(){
 
         {
             id: "ST001",
-            name: "Miruthula",
+            name: "Sample Student 001",
             department: "B.Sc CS AI",
             year: "III",
-            email: "miruthula@gmail.com",
+            email: "student001@example.invalid",
             status: "Active",
             enrolledCourses: ["AI101", "PY103"],
             completedCourses: ["AI101"]
@@ -655,10 +655,10 @@ function initializeDefaultStudents(){
 
         {
             id: "ST002",
-            name: "Priya",
+            name: "Sample Student 002",
             department: "BCA",
             year: "II",
-            email: "priya@gmail.com",
+            email: "student002@example.invalid",
             status: "Active",
             enrolledCourses: ["ML102"],
             completedCourses: []
@@ -666,10 +666,10 @@ function initializeDefaultStudents(){
 
         {
             id: "ST003",
-            name: "Kavya",
+            name: "Sample Student 003",
             department: "B.Sc IT",
             year: "III",
-            email: "kavya@gmail.com",
+            email: "student003@example.invalid",
             status: "Active",
             enrolledCourses: ["WD104", "DB109"],
             completedCourses: ["WD104"]
@@ -677,10 +677,10 @@ function initializeDefaultStudents(){
 
         {
             id: "ST004",
-            name: "Rahul",
+            name: "Sample Student 004",
             department: "B.Com",
             year: "I",
-            email: "rahul@gmail.com",
+            email: "student004@example.invalid",
             status: "Inactive",
             enrolledCourses: ["SQL110"],
             completedCourses: []
@@ -688,10 +688,10 @@ function initializeDefaultStudents(){
 
         {
             id: "ST005",
-            name: "Arun",
+            name: "Sample Student 005",
             department: "BBA",
             year: "II",
-            email: "arun@gmail.com",
+            email: "student005@example.invalid",
             status: "Active",
             enrolledCourses: ["DA113"],
             completedCourses: ["DA113"]
@@ -699,10 +699,10 @@ function initializeDefaultStudents(){
 
         {
             id: "ST006",
-            name: "Ananya",
+            name: "Sample Student 006",
             department: "B.Sc CS AI",
             year: "II",
-            email: "ananya@gmail.com",
+            email: "student006@example.invalid",
             status: "Active",
             enrolledCourses: ["DL114", "AI101"],
             completedCourses: []
@@ -710,10 +710,10 @@ function initializeDefaultStudents(){
 
         {
             id: "ST007",
-            name: "Vignesh",
+            name: "Sample Student 007",
             department: "BCA",
             year: "III",
-            email: "vignesh@gmail.com",
+            email: "student007@example.invalid",
             status: "Active",
             enrolledCourses: ["PY103", "JV105"],
             completedCourses: ["PY103"]
@@ -721,10 +721,10 @@ function initializeDefaultStudents(){
 
         {
             id: "ST008",
-            name: "Harini",
+            name: "Sample Student 008",
             department: "B.Sc IT",
             year: "I",
-            email: "harini@gmail.com",
+            email: "student008@example.invalid",
             status: "Inactive",
             enrolledCourses: ["CP106"],
             completedCourses: []

@@ -1,11 +1,13 @@
 const express = require("express");
-const mongoose = require("mongoose");
+const isObjectId = require("../utils/objectId");
 const Enrollment = require("../models/Enrollment");
 const Course = require("../models/Course");
 const LearningProgress = require("../models/LearningProgress");
+const LearningResource = require("../models/LearningResource");
 const Certificate = require("../models/Certificate");
 const Notification = require("../models/Notification");
 const crypto = require("crypto");
+const { isRecord } = require("../utils/validation");
 const authenticateToken = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
@@ -28,10 +30,23 @@ router.get("/", authorizeRoles("admin"), async (req, res, next) => {
 router.get("/mine", authorizeRoles("student"), async (req, res, next) => {
   try {
     const enrollments = await Enrollment.find({ student: req.user.id, status: { $ne: "withdrawn" } })
-      .populate("course")
+      .populate("course", "courseName courseCode instructor duration category level overview status")
       .sort({ enrolledAt: -1 })
       .lean();
-    res.json({ success: true, enrollments });
+    const courseIds = enrollments.map((item) => item.course?._id).filter(Boolean);
+    const counts = await LearningResource.aggregate([
+      { $match: { course: { $in: courseIds } } },
+      { $group: { _id: "$course", count: { $sum: 1 } } }
+    ]);
+    const resourceCounts = new Map(counts.map((item) => [String(item._id), item.count]));
+    const populatedEnrollments = enrollments.map((item) => ({
+      ...item,
+      course: item.course && {
+        ...item.course,
+        resourceCount: resourceCounts.get(String(item.course._id)) || 0
+      }
+    }));
+    res.json({ success: true, enrollments: populatedEnrollments });
   } catch (error) {
     next(error);
   }
@@ -39,8 +54,12 @@ router.get("/mine", authorizeRoles("student"), async (req, res, next) => {
 
 router.post("/", authorizeRoles("student"), async (req, res, next) => {
   try {
+    if (!isRecord(req.body) ||
+        Object.keys(req.body).some((field) => field !== "courseId")) {
+      return res.status(400).json({ success: false, message: "A course ID is required" });
+    }
     const { courseId } = req.body;
-    if (!mongoose.isValidObjectId(courseId)) {
+    if (!isObjectId(courseId)) {
       return res.status(400).json({ success: false, message: "Invalid course ID" });
     }
     if (!(await Course.exists({ _id: courseId }))) {
@@ -68,7 +87,7 @@ router.post("/", authorizeRoles("student"), async (req, res, next) => {
 router.patch("/:courseId/withdraw", authorizeRoles("student"), async (req, res, next) => {
   try {
     const { courseId } = req.params;
-    if (!mongoose.isValidObjectId(courseId)) {
+    if (!isObjectId(courseId)) {
       return res.status(400).json({ success: false, message: "Invalid course ID" });
     }
     const enrollment = await Enrollment.findOneAndUpdate(
@@ -86,32 +105,61 @@ router.patch("/:courseId/withdraw", authorizeRoles("student"), async (req, res, 
 router.patch("/:courseId/complete", authorizeRoles("student"), async (req, res, next) => {
   try {
     const { courseId } = req.params;
-    if (!mongoose.isValidObjectId(courseId)) {
+    if (!isObjectId(courseId)) {
       return res.status(400).json({ success: false, message: "Invalid course ID" });
     }
-    const progress = await LearningProgress.findOne({ student: req.user.id, course: courseId }).lean();
-    if (!progress || progress.completedLessons < progress.totalLessons) {
-      return res.status(400).json({ success: false, message: "Complete all lessons before completing the course" });
+    const enrollment = await Enrollment.findOne({
+      student: req.user.id,
+      course: courseId,
+      status: { $in: ["active", "completed"] }
+    });
+    if (!enrollment) return res.status(403).json({ success: false, message: "An active enrollment is required to complete this course" });
+
+    const resources = await LearningResource.find({ course: courseId }).select("_id").lean();
+    if (resources.length === 0) {
+      return res.status(400).json({ success: false, message: "This course has no learning resources yet and cannot be completed" });
     }
-    const enrollment = await Enrollment.findOneAndUpdate(
-      { student: req.user.id, course: courseId, status: { $in: ["active", "completed"] } },
-      { $set: { status: "completed" } },
-      { returnDocument: "after", runValidators: true }
-    );
-    if (!enrollment) return res.status(404).json({ success: false, message: "Active enrollment not found" });
-    let certificate = await Certificate.findOne({ student: req.user.id, course: courseId });
-    if (!certificate) {
-      certificate = await Certificate.create({
-        student: req.user.id,
-        course: courseId,
-        certificateCode: `SCMS-${crypto.randomBytes(8).toString("hex").toUpperCase()}`
+    const progress = await LearningProgress.findOne({ student: req.user.id, course: courseId });
+    const completed = new Set((progress?.completedResources || []).map(String));
+    const incompleteCount = resources.filter((resource) => !completed.has(String(resource._id))).length;
+    if (incompleteCount > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Complete all learning resources before completing the course (${incompleteCount} remaining)`
       });
+    }
+
+    if (!progress) {
+      return res.status(409).json({ success: false, message: "Course progress is not available yet" });
+    }
+    progress.completedLessons = resources.length;
+    progress.totalLessons = resources.length;
+    progress.progressPercent = 100;
+    await progress.save();
+    enrollment.status = "completed";
+    await enrollment.save();
+    let certificate = await Certificate.findOne({ student: req.user.id, course: courseId });
+    let certificateCreated = false;
+    if (!certificate) {
+      try {
+        certificate = await Certificate.create({
+          student: req.user.id,
+          course: courseId,
+          certificateCode: `SCMS-${crypto.randomBytes(8).toString("hex").toUpperCase()}`
+        });
+        certificateCreated = true;
+      } catch (error) {
+        if (error.code !== 11000) throw error;
+        certificate = await Certificate.findOne({ student: req.user.id, course: courseId });
+      }
+    }
+    if (certificateCreated) {
       await Notification.create({
         recipient: req.user.id,
         message: `Course completed. Certificate ${certificate.certificateCode} is ready.`
       });
     }
-    res.json({ success: true, message: "Course completed", enrollment, certificate });
+    res.json({ success: true, message: "Course completed", enrollment, progress, certificate });
   } catch (error) {
     next(error);
   }

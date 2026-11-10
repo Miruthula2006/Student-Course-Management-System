@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/useAuth.js";
-import LogoutButton from "../components/LogoutButton.jsx";
+import StudentSidebar from "../components/StudentSidebar.jsx";
 import api from "../services/api.js";
 
 const MyCourses = () => {
@@ -21,12 +21,12 @@ const MyCourses = () => {
         ]).then(([enrollmentResponse, progressResponse, certificateResponse]) => {
             if (!active) return;
             setEnrolledCourses(enrollmentResponse.data.enrollments
-                .map((item) => item.course)
-                .filter(Boolean)
-                .map((course) => ({
-                    ...course,
-                    title: course.title || course.courseName,
-                    description: course.description || course.overview || "No description available."
+                .filter((item) => item.course)
+                .map((item) => ({
+                    ...item.course,
+                    title: item.course.title || item.course.courseName,
+                    description: item.course.description || item.course.overview || "No description available.",
+                    enrollmentStatus: item.status
                 })));
             setProgressByCourse(Object.fromEntries(
                 progressResponse.data.progress.map((item) => [String(item.course?._id || item.course), item])
@@ -46,18 +46,7 @@ const MyCourses = () => {
             <PageCss href="/css/style.css" />
             <PageCss href="/css/dashboard.css" />
             <div className="container">
-                <aside className="sidebar">
-                    <h2><i className="fa-solid fa-graduation-cap"></i> SCMS</h2>
-                    <p>Student Course Management</p>
-                    <ul>
-                        <li><Link to="/student-dashboard"><i className="fa-solid fa-house"></i>Dashboard</Link></li>
-                        <li><Link to="/courses"><i className="fa-solid fa-book"></i>Courses</Link></li>
-                        <li className="active"><Link to="/my-courses"><i className="fa-solid fa-graduation-cap"></i>My Courses</Link></li>
-                        <li><Link to="/progress"><i className="fa-solid fa-chart-line"></i>Progress</Link></li>
-                        <li><Link to="/notifications"><i className="fa-solid fa-bell"></i>Notifications</Link></li>
-                        <li><LogoutButton /></li>
-                    </ul>
-                </aside>
+                <StudentSidebar />
                 <main className="main-content">
                     <header className="topbar">
                         <h1>My Learning</h1>
@@ -73,13 +62,13 @@ const MyCourses = () => {
                             </div>
                         ) : enrolledCourses.map((course) => {
                             const courseProgress = progressByCourse[String(course._id || course.id)];
-                            const total = courseProgress?.totalLessons || course.materials?.length || 0;
+                            const total = courseProgress?.totalLessons ?? course.resourceCount ?? course.materials?.length ?? 0;
                             const completed = courseProgress?.completedLessons || 0;
                             const progress = {
-                                percent: courseProgress?.progressPercent || 0,
+                                percent: total ? Math.round((completed / total) * 100) : 0,
                                 completedCount: completed,
                                 total,
-                                complete: total > 0 && completed === total
+                                complete: course.enrollmentStatus === "completed" && total > 0 && completed === total
                             };
                             const certificate = certificateByCourse[String(course._id || course.id)];
                             return (
@@ -91,7 +80,7 @@ const MyCourses = () => {
                                     <div className="learning-progress">
                                         <div className="learning-progress-label"><span>Learning progress</span><strong>{progress.percent}%</strong></div>
                                         <div className="learning-progress-track"><span style={{ width: `${progress.percent}%` }} /></div>
-                                        <small>{progress.completedCount} of {progress.total} resources completed</small>
+                                        <small>{progress.total ? `${progress.completedCount} of ${progress.total} resources completed` : "No learning resources have been added to this course yet."}</small>
                                     </div>
                                     <div className="course-card-actions">
                                         <Link to={`/course/${encodeURIComponent(course._id || course.id)}`} className="student-btn">{progress.complete ? "Review Course" : "Continue Learning"}</Link>

@@ -1,8 +1,8 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const Certificate = require("../models/Certificate");
 const authenticateToken = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
+const isObjectId = require("../utils/objectId");
 
 const router = express.Router();
 router.use(authenticateToken);
@@ -23,7 +23,8 @@ router.get("/", authorizeRoles("admin"), async (req, res, next) => {
   try {
     const filter = {};
     if (req.query.studentId) {
-      if (!mongoose.isValidObjectId(req.query.studentId)) {
+      if (typeof req.query.studentId !== "string" ||
+          !isObjectId(req.query.studentId)) {
         return res.status(400).json({ success: false, message: "Invalid student ID" });
       }
       filter.student = req.query.studentId;
@@ -41,7 +42,7 @@ router.get("/", authorizeRoles("admin"), async (req, res, next) => {
 
 router.get("/:id", async (req, res, next) => {
   try {
-    if (!mongoose.isValidObjectId(req.params.id)) {
+    if (!isObjectId(req.params.id)) {
       return res.status(400).json({ success: false, message: "Invalid certificate ID" });
     }
     const filter = { _id: req.params.id };

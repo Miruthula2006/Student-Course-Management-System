@@ -13,6 +13,7 @@ import Courses from "./pages/Courses.jsx";
 import MyCourses from "./pages/MyCourses.jsx";
 import Progress from "./pages/Progress.jsx";
 import Notifications from "./pages/Notifications.jsx";
+import Profile from "./pages/Profile.jsx";
 
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import ManageCourses from "./pages/ManageCourses.jsx";
@@ -24,6 +25,7 @@ import ViewEnrollments from "./pages/ViewEnrollments.jsx";
 import CourseDetails from "./pages/CourseDetails.jsx";
 import Certificate from "./pages/Certificate.jsx";
 import Chat from "./components/Chat.jsx";
+import AdminChat from "./pages/AdminChat.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { issueCertificate, normalizeCourses } from "./utils/courseUtils.js";
 
@@ -153,6 +155,11 @@ const App = () => {
             />
 
             <Route
+                path="/profile"
+                element={studentRoute(<Profile />)}
+            />
+
+            <Route
                 path="/courses"
                 element={<Courses />}
             />
@@ -219,6 +226,11 @@ const App = () => {
             />
 
             <Route
+                path="/admin-chat"
+                element={adminRoute(<AdminChat />)}
+            />
+
+            <Route
                 path="/manage-courses"
                 element={adminRoute(<ManageCourses />)}
             />
@@ -256,6 +268,11 @@ const App = () => {
             <Route
                 path="/manage-students.html"
                 element={adminRoute(<ManageStudents />)}
+            />
+
+            <Route
+                path="/student-details/:studentId"
+                element={adminRoute(<StudentDetails />)}
             />
 
             <Route

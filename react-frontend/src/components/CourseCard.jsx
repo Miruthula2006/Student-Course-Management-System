@@ -10,7 +10,7 @@ const CourseCard = ({ course, onEnroll }) => {
             <p><strong>Level:</strong> {course.level}</p>
             <p>{course.description}</p>
             <p><strong>Instructor:</strong> {course.instructor || "Not Assigned"}</p>
-            <p className="material-summary"><i className="fa-solid fa-layer-group"></i> {course.materials?.length || 0} learning resources</p>
+            <p className="material-summary"><i className="fa-solid fa-layer-group"></i> {course.resourceCount ?? course.materials?.length ?? 0} learning resources</p>
             <div className="course-card-actions">
                 <Link className="secondary-action" to={`/course/${encodeURIComponent(course.id)}`}>View Course</Link>
                 <button className="student-btn" onClick={() => onEnroll(course)}>Enroll</button>

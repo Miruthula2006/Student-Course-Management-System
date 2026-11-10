@@ -15,10 +15,7 @@ const AuthProvider = ({ children }) => {
                 : null;
 
         } catch (error) {
-            console.error(
-                "Error reading logged-in user:",
-                error
-            );
+            console.error("Error reading logged-in user", { name: error.name });
 
             localStorage.removeItem("loggedInUser");
             return null;
@@ -62,10 +59,7 @@ const AuthProvider = ({ children }) => {
                 setIsReady(true);
 
             } catch (error) {
-                console.error(
-                    "Error updating authentication state:",
-                    error
-                );
+                console.error("Error updating authentication state", { name: error.name });
 
                 setUser(null);
             }
@@ -148,4 +142,3 @@ const logout = () => {
 };
 
 export default AuthProvider;
-

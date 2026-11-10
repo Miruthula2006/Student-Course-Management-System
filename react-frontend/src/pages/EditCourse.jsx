@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import {
     Link,
@@ -6,7 +6,8 @@ import {
     useParams
 } from "react-router-dom";
 import LogoutButton from "../components/LogoutButton.jsx";
-import { useCourses } from "../context/CourseContext.jsx";
+import { useCourses } from "../context/useCourses.js";
+import api from "../services/api.js";
 
 const EditCourse = () => {
     const navigate = useNavigate();
@@ -14,11 +15,15 @@ const EditCourse = () => {
 
     const {
         courses,
-        updateCourse,
-        fetchCourses
+        updateCourse
     } = useCourses();
 
-    const [course, setCourse] = useState(null);
+    const selectedCourse = useMemo(
+        () => courses.find((item) => String(item.id ?? item._id) === String(id)),
+        [courses, id]
+    );
+
+    const [course, setCourse] = useState(selectedCourse);
 
     const [formData, setFormData] = useState({
         courseCode: "",
@@ -36,34 +41,16 @@ const EditCourse = () => {
         title: "",
         duration: "",
         url: "",
+        fileReference: "",
         content: ""
     });
 
     const [message, setMessage] = useState("");
-
-    // =========================
-    // LOAD COURSES FROM API
-    // =========================
+    const [editingResourceId, setEditingResourceId] = useState("");
 
     useEffect(() => {
-        fetchCourses();
-    }, []);
-
-    // =========================
-    // FIND SELECTED COURSE
-    // =========================
-
-    useEffect(() => {
-        if (!id || courses.length === 0) {
-            return;
-        }
-
-        const selectedCourse = courses.find(
-            (item) => item.id === id
-        );
-
         if (!selectedCourse) {
-            setMessage("Course not found.");
+            setCourse(null);
             return;
         }
 
@@ -77,12 +64,24 @@ const EditCourse = () => {
             level: selectedCourse.level || "",
             courseDescription: selectedCourse.overview || "",
             instructor: selectedCourse.instructor || "",
-            materials: Array.isArray(selectedCourse.materials)
-                ? selectedCourse.materials
-                : []
+            materials: []
         });
-
-    }, [id, courses]);
+        let active = true;
+        api.get(`/api/v1/resources/courses/${encodeURIComponent(id)}`)
+            .then((response) => {
+                if (!active) return;
+                setFormData((previous) => ({
+                    ...previous,
+                    materials: response.data.resources || []
+                }));
+            })
+            .catch((requestError) => {
+                if (active) setMessage(requestError.response?.data?.message || "Unable to load course resources.");
+            });
+        return () => {
+            active = false;
+        };
+    }, [id, selectedCourse]);
 
     // =========================
     // HANDLE FORM CHANGES
@@ -134,7 +133,25 @@ const EditCourse = () => {
     // ADD RESOURCE
     // =========================
 
-    const addResource = () => {
+    const resetResourceForm = () => {
+        setResourceForm({ type: "Reading", title: "", duration: "", url: "", fileReference: "", content: "" });
+        setEditingResourceId("");
+    };
+
+    const editResource = (resource) => {
+        setEditingResourceId(String(resource._id || resource.id));
+        setResourceForm({
+            type: resource.type || "Reading",
+            title: resource.title || "",
+            duration: resource.duration || "",
+            url: resource.url || "",
+            fileReference: resource.fileReference || "",
+            content: resource.description || resource.content || ""
+        });
+        setMessage("");
+    };
+
+    const addResource = async () => {
 
         if (
             !resourceForm.title.trim() ||
@@ -148,53 +165,53 @@ const EditCourse = () => {
         }
 
         const resource = {
-            id: `${id}-R${Date.now()}`,
             type: resourceForm.type,
-            icon: getResourceIcon(resourceForm.type),
             title: resourceForm.title.trim(),
-            duration:
-                resourceForm.duration.trim() || "Self-paced",
+            duration: resourceForm.duration.trim(),
             url: resourceForm.url.trim(),
-            content: resourceForm.content.trim()
+            fileReference: resourceForm.fileReference.trim(),
+            description: resourceForm.content.trim(),
+            order: editingResourceId
+                ? formData.materials.find((item) => String(item._id || item.id) === editingResourceId)?.order || 0
+                : formData.materials.length
         };
 
-        setFormData((previous) => ({
-            ...previous,
-            materials: [
-                ...previous.materials,
-                resource
-            ]
-        }));
-
-        setResourceForm({
-            type: "Video",
-            title: "",
-            duration: "",
-            url: "",
-            content: ""
-        });
-
-        setMessage(
-            "Resource added. Save the course to apply the changes."
-        );
+        try {
+            const response = editingResourceId
+                ? await api.put(`/api/v1/resources/${encodeURIComponent(editingResourceId)}`, resource)
+                : await api.post(`/api/v1/resources/courses/${encodeURIComponent(id)}`, resource);
+            const savedResource = response.data.resource;
+            setFormData((previous) => ({
+                ...previous,
+                materials: editingResourceId
+                    ? previous.materials.map((item) => String(item._id || item.id) === editingResourceId ? savedResource : item)
+                    : [...previous.materials, savedResource]
+            }));
+            setMessage(editingResourceId ? "Resource updated." : "Resource added.");
+            resetResourceForm();
+        } catch (requestError) {
+            setMessage(requestError.response?.data?.message || "Unable to save the resource.");
+        }
     };
 
     // =========================
     // REMOVE RESOURCE
     // =========================
 
-    const removeResource = (resourceId) => {
-
-        setFormData((previous) => ({
-            ...previous,
-            materials: previous.materials.filter(
-                (item) => item.id !== resourceId
-            )
-        }));
-
-        setMessage(
-            "Resource removed. Save the course to apply the changes."
-        );
+    const removeResource = async (resourceId) => {
+        try {
+            await api.delete(`/api/v1/resources/${encodeURIComponent(resourceId)}`);
+            setFormData((previous) => ({
+                ...previous,
+                materials: previous.materials.filter(
+                    (item) => String(item._id || item.id) !== String(resourceId)
+                )
+            }));
+            if (editingResourceId === String(resourceId)) resetResourceForm();
+            setMessage("Resource removed.");
+        } catch (requestError) {
+            setMessage(requestError.response?.data?.message || "Unable to remove the resource.");
+        }
     };
 
     // =========================
@@ -257,10 +274,7 @@ const EditCourse = () => {
                 formData.level,
 
             overview:
-                formData.courseDescription.trim(),
-
-            materials:
-                formData.materials
+                formData.courseDescription.trim()
         };
 
         try {
@@ -279,10 +293,7 @@ const EditCourse = () => {
 
         } catch (error) {
 
-            console.error(
-                "Error updating course:",
-                error
-            );
+            console.error("Error updating course", { status: error.response?.status });
 
             setMessage(
                 "Unable to update course."
@@ -350,6 +361,13 @@ const EditCourse = () => {
                             <Link to="/view-enrollments">
                                 <i className="fa-solid fa-user-check"></i>
                                 Enrollments
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link to="/admin-chat">
+                                <i className="fa-solid fa-comments"></i>
+                                Chat
                             </Link>
                         </li>
 
@@ -595,7 +613,7 @@ const EditCourse = () => {
 
                                                 <article
                                                     className="learning-resource"
-                                                    key={material.id}
+                                                    key={material._id || material.id}
                                                 >
 
                                                     <div className="resource-number">
@@ -606,8 +624,7 @@ const EditCourse = () => {
 
                                                         <i
                                                             className={
-                                                                material.icon ||
-                                                                "fa-solid fa-book-open"
+                                                                material.icon || getResourceIcon(material.type)
                                                             }
                                                         ></i>
 
@@ -626,7 +643,7 @@ const EditCourse = () => {
                                                         </h3>
 
                                                         <p>
-                                                            {material.content}
+                                                            {material.description || material.content}
                                                         </p>
 
                                                         {material.url && (
@@ -642,11 +659,18 @@ const EditCourse = () => {
                                                         className="danger-btn resource-remove-btn"
                                                         onClick={() =>
                                                             removeResource(
-                                                                material.id
+                                                                material._id || material.id
                                                             )
                                                         }
                                                     >
                                                         Remove
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        className="secondary-action"
+                                                        onClick={() => editResource(material)}
+                                                    >
+                                                        Edit
                                                     </button>
 
                                                 </article>
@@ -666,7 +690,7 @@ const EditCourse = () => {
                                 >
 
                                     <h3>
-                                        Add New Resource
+                                        {editingResourceId ? "Edit Resource" : "Add New Resource"}
                                     </h3>
 
                                     <div className="form-group">
@@ -692,6 +716,14 @@ const EditCourse = () => {
 
                                             <option value="Practice">
                                                 Practice
+                                            </option>
+
+                                            <option value="Document">
+                                                Document
+                                            </option>
+
+                                            <option value="Link">
+                                                Link
                                             </option>
 
                                             <option value="Reading">
@@ -753,6 +785,22 @@ const EditCourse = () => {
 
                                     <div className="form-group">
 
+                                        <label htmlFor="resourceFileReference">
+                                            Stored File Reference (Optional)
+                                        </label>
+
+                                        <input
+                                            id="resourceFileReference"
+                                            name="fileReference"
+                                            value={resourceForm.fileReference}
+                                            onChange={handleResourceChange}
+                                            placeholder="Storage key or relative file path"
+                                        />
+
+                                    </div>
+
+                                    <div className="form-group">
+
                                         <label htmlFor="resourceContent">
                                             Resource Description / Content
                                         </label>
@@ -778,9 +826,14 @@ const EditCourse = () => {
 
                                         {" "}
 
-                                        Add Resource
+                                        {editingResourceId ? "Save Resource" : "Add Resource"}
 
                                     </button>
+                                    {editingResourceId && (
+                                        <button type="button" className="secondary-action" onClick={resetResourceForm}>
+                                            Cancel edit
+                                        </button>
+                                    )}
 
                                 </div>
 

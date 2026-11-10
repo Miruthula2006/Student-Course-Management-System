@@ -1,17 +1,19 @@
 import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import LogoutButton from "../components/LogoutButton.jsx";
 import api from "../services/api.js";
 
 const StudentDetails = () => {
     const location = useLocation();
+    const { studentId: routeStudentId } = useParams();
 
     const [student, setStudent] = useState(null);
     const [enrollments, setEnrollments] = useState([]);
     const [certificates, setCertificates] = useState([]);
     const [loadedStudentId, setLoadedStudentId] = useState(null);
-    const selectedStudentId = new URLSearchParams(location.search).get("studentId");
+    const [error, setError] = useState("");
+    const selectedStudentId = routeStudentId || new URLSearchParams(location.search).get("studentId");
     const loading = Boolean(selectedStudentId) && loadedStudentId !== selectedStudentId;
 
     useEffect(() => {
@@ -29,10 +31,12 @@ const StudentDetails = () => {
                 (item) => String(item.student?._id || item.student) === String(selectedStudentId)
             ));
             setCertificates(certificateResponse.data.certificates || []);
+            setError("");
             setLoadedStudentId(selectedStudentId);
-        }).catch(() => {
+        }).catch((requestError) => {
             if (active) {
                 setStudent(null);
+                setError(requestError.response?.data?.message || "Unable to load student information.");
                 setLoadedStudentId(selectedStudentId);
             }
         });
@@ -96,6 +100,13 @@ const StudentDetails = () => {
                             </li>
 
                             <li>
+                                <Link to="/admin-chat">
+                                    <i className="fa-solid fa-comments"></i>
+                                    Chat
+                                </Link>
+                            </li>
+
+                            <li>
                                 <LogoutButton admin />
                             </li>
 
@@ -111,14 +122,14 @@ const StudentDetails = () => {
                                 Student Details
                             </h1>
 
-                            <p>{loading ? "Loading student information..." : "Student information could not be found."}</p>
+                            <p>{loading ? "Loading student information..." : error || (selectedStudentId ? "Student information could not be found." : "No student ID was provided.")}</p>
 
                         </header>
 
                         <section className="course-card">
 
                             <h2>
-                                {loading ? "Loading Student" : "Student Not Found"}
+                                {loading ? "Loading Student" : error ? "Unable to Load Student" : "Student Not Found"}
                             </h2>
 
                             <br />
@@ -158,6 +169,14 @@ const StudentDetails = () => {
 
     const studentEmail =
         student.email ||
+        "N/A";
+
+    const studentRegisterNumber =
+        student.registerNumber ||
+        "N/A";
+
+    const studentPhone =
+        student.phone ||
         "N/A";
 
     const department =
@@ -240,6 +259,13 @@ const StudentDetails = () => {
                             <Link to="/view-enrollments">
                                 <i className="fa-solid fa-user-check"></i>
                                 Enrollments
+                            </Link>
+                        </li>
+
+                        <li>
+                            <Link to="/admin-chat">
+                                <i className="fa-solid fa-comments"></i>
+                                Chat
                             </Link>
                         </li>
 
@@ -373,6 +399,20 @@ const StudentDetails = () => {
                             <strong>Email :</strong>{" "}
                             <span id="studentEmail">
                                 {studentEmail}
+                            </span>
+                        </p>
+
+                        <p>
+                            <strong>Register Number :</strong>{" "}
+                            <span id="studentRegisterNumber">
+                                {studentRegisterNumber}
+                            </span>
+                        </p>
+
+                        <p>
+                            <strong>Phone :</strong>{" "}
+                            <span id="studentPhone">
+                                {studentPhone}
                             </span>
                         </p>
 

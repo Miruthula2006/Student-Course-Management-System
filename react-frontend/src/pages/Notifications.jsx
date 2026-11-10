@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PageCss from "../components/PageCss.jsx";
 import { Link } from "react-router-dom";
+import StudentSidebar from "../components/StudentSidebar.jsx";
 import { useAuth } from "../auth/useAuth.js";
 import { io } from "socket.io-client";
 import api from "../services/api.js";
@@ -55,71 +56,7 @@ const Notifications = () => {
                     SIDEBAR
                 ========================== */}
 
-                <aside className="sidebar">
-
-                    <h2>
-                        <i className="fa-solid fa-graduation-cap"></i>
-                        SCMS
-                    </h2>
-
-                    <p>
-                        Student Course Management
-                    </p>
-
-                    <ul>
-
-                        <li>
-                            <Link to="/student-dashboard">
-                                <i className="fa-solid fa-house"></i>
-                                Dashboard
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link to="/courses">
-                                <i className="fa-solid fa-book"></i>
-                                Courses
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link to="/my-courses">
-                                <i className="fa-solid fa-graduation-cap"></i>
-                                My Courses
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link to="/progress">
-                                <i className="fa-solid fa-chart-line"></i>
-                                Progress
-                            </Link>
-                        </li>
-
-                        <li>
-                            <Link to="/chat">
-                                <i className="fa-solid fa-comments"></i>
-                                Chat
-                            </Link>
-                        </li>
-
-                        <li className="active">
-                            <Link to="/notifications">
-                                <i className="fa-solid fa-bell"></i>
-                                Notifications
-                            </Link>
-                        </li>
-
-                        <li>
-                            <a href="#" id="logoutBtn">
-                                <i className="fa-solid fa-right-from-bracket"></i>
-                                Logout
-                            </a>
-                        </li>
-
-                    </ul>
-
-                </aside>
+                <StudentSidebar />
 
                 {/* =========================
                     MAIN CONTENT

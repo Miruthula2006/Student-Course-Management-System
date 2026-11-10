@@ -21,9 +21,14 @@ Run the backend and use Postman with a base URL of `http://localhost:5000`. Keep
 
 ## Messaging and notifications
 
-- Connect two clients to Socket.IO using `auth: { token }`. A missing/invalid token must be rejected.
-- Emit `send_message` with a valid `recipientId` and `text`; both user rooms receive `receive_message`, the recipient receives `new_notification`, and the sender receives an acknowledgement.
-- `GET /api/v1/messages/:userId` returns only the conversation involving the current user. `GET /api/v1/notifications` and `PATCH /api/v1/notifications/:id/read` are recipient-scoped.
+- Connect a student and the configured administrator to Socket.IO using `auth: { token }`. Missing, invalid, expired, or revoked tokens must be rejected. Clients cannot publish chat messages over the socket.
+- Student-only `GET /api/v1/messages/conversation` loads the logged-in student's conversation with the configured admin; `POST` to the same path accepts `{ "text": "...", "clientMessageId": "<uuid>" }`. The API derives both sender and admin recipient; the admin MongoDB ID is never returned to students.
+- Admin-only `GET /api/v1/messages/conversations` lists students with conversations. `GET /api/v1/messages/conversations/:studentId` loads a listed conversation and `POST` to the same path replies with `{ "text": "...", "clientMessageId": "<uuid>" }`. Only the configured administrator can manage these conversations; sender identity always comes from the JWT.
+- Message writes are persisted before server-side `receive_message` broadcasts. Repeated client message IDs for the same sender and recipient return the existing message without broadcasting a duplicate. The recipient receives `new_notification` when notification creation succeeds.
+- Authenticated send routes limit each user to 10 messages per 10 seconds and return `429` when exceeded.
+- `GET /api/v1/notifications` and `PATCH /api/v1/notifications/:id/read` are recipient-scoped.
 - Repeat requests without credentials and with another user's notification/certificate IDs to verify access is denied.
 
 This checklist is a test procedure, not a claim that external Postman or production tests have already been run.
+
+The automated backend security suite runs with `MONGO_TEST_URI=<test-server-uri> npm test` from `backend`. It creates a unique `scms_phase9_test_*` database for each run and refuses to clean up any other database.

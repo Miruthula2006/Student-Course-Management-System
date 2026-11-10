@@ -10,10 +10,12 @@ const mongoose = require("mongoose");
 
 const connectDB = require("./config/db");
 const initializeSocket = require("./config/socket");
+const getAllowedOrigins = require("./config/origins");
 
 const notFound = require("./middleware/notFoundMiddleware");
 const errorHandler = require("./middleware/errorMiddleware");
 const courseRoutes = require("./routes/courseRoutes");
+const resourceRoutes = require("./routes/resourceRoutes");
 const authRoutes = require("./routes/authRoutes");
 const studentRoutes = require("./routes/studentRoutes");
 const profileRoutes = require("./routes/profileRoutes");
@@ -25,25 +27,27 @@ const certificateRoutes = require("./routes/certificateRoutes");
 
 const app = express();
 const server = http.createServer(app);
-initializeSocket(server);
+const io = initializeSocket(server);
+app.set("io", io);
 if (process.env.NODE_ENV === "production") app.set("trust proxy", 1);
 
-const allowedOrigins = (process.env.CLIENT_URL || "http://localhost:5173")
-  .split(",")
-  .map((origin) => origin.trim());
+const allowedOrigins = getAllowedOrigins();
 
 app.use(helmet());
 app.use(cors({
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   origin(origin, callback) {
     if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
-    const error = new Error("Origin not allowed by CORS");
-    error.status = 403;
+    const error = new Error("Origin not allowed");
+    error.statusCode = 403;
     return callback(error);
   }
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+morgan.token("safe-path", (req) => req.originalUrl.split("?")[0]);
+app.use(morgan(":method :safe-path :status :response-time ms"));
+app.use(express.json({ limit: "1mb" }));
+app.use(express.urlencoded({ extended: true, limit: "64kb", parameterLimit: 100 }));
 
 app.get("/", (req, res) => {
   res.json({
@@ -61,6 +65,7 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/courses", courseRoutes);
+app.use("/api/v1/resources", resourceRoutes);
 app.use("/api/v1/students", studentRoutes);
 app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/messages", messageRoutes);
@@ -82,18 +87,18 @@ const startServer = async () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error.message);
+    console.error("Failed to start server", { name: error.name, code: error.code });
     process.exit(1);
   }
 };
 
 if (require.main === module) {
   process.on("unhandledRejection", (error) => {
-    console.error("Unhandled rejection:", error);
+    console.error("Unhandled rejection", { name: error?.name, code: error?.code });
     server.close(() => process.exit(1));
   });
   process.on("uncaughtException", (error) => {
-    console.error("Uncaught exception:", error);
+    console.error("Uncaught exception", { name: error?.name, code: error?.code });
     server.close(() => process.exit(1));
   });
   process.on("SIGTERM", () => {

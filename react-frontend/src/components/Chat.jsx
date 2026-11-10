@@ -1,92 +1,121 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
+import { Link } from "react-router-dom";
 import PageCss from "./PageCss.jsx";
-import { useAuth } from "../auth/useAuth.js";
+import StudentSidebar from "./StudentSidebar.jsx";
+import ChatThread from "./ChatThread.jsx";
 import api from "../services/api.js";
+import "./chat.css";
 
 const socketUrl = import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
 
+function mergeMessages(current, incoming) {
+    const messages = new Map(current.map((item) => [item._id, item]));
+    incoming.forEach((item) => messages.set(item._id, item));
+    return [...messages.values()].sort(
+        (first, second) => new Date(first.createdAt) - new Date(second.createdAt)
+    );
+}
+
 const Chat = () => {
-  const { user } = useAuth();
-  const [recipientId, setRecipientId] = useState("");
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [connected, setConnected] = useState(false);
-  const [error, setError] = useState("");
-  const socketRef = useRef(null);
+    const [messages, setMessages] = useState([]);
+    const [connected, setConnected] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [sending, setSending] = useState(false);
+    const [error, setError] = useState("");
+    const socketRef = useRef(null);
 
-  useEffect(() => {
-    const socket = io(socketUrl, {
-      autoConnect: false,
-      auth: { token: sessionStorage.getItem("token") }
-    });
-    socketRef.current = socket;
+    const loadHistory = useCallback(async () => {
+        try {
+            const response = await api.get("/api/v1/messages/conversation");
+            setMessages((current) => mergeMessages(current, response.data.messages || []));
+            setError("");
+        } catch (requestError) {
+            setError(requestError.response?.data?.message || "Unable to load your conversation.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
-    socket.on("connect", () => setConnected(true));
-    socket.on("disconnect", () => setConnected(false));
-    socket.on("connect_error", (connectError) => setError(connectError.message));
-    socket.on("receive_message", (incoming) => {
-      setMessages((current) => [...current, incoming]);
-    });
-    socket.connect();
+    useEffect(() => {
+        let active = true;
+        const socket = io(socketUrl, {
+            autoConnect: false,
+            auth: { token: sessionStorage.getItem("token") }
+        });
+        socketRef.current = socket;
 
-    return () => {
-      socket.disconnect();
-      socketRef.current = null;
-    };
-  }, []);
+        socket.on("connect", () => {
+            if (!active) return;
+            setConnected(true);
+            loadHistory();
+        });
+        socket.on("disconnect", () => active && setConnected(false));
+        socket.on("connect_error", (connectError) => {
+            if (!active) return;
+            setConnected(false);
+            setError(connectError.message || "Unable to connect to chat. Reconnecting…");
+        });
+        socket.on("receive_message", (incoming) => {
+            if (active) setMessages((current) => mergeMessages(current, [incoming]));
+        });
+        socket.connect();
+        Promise.resolve().then(() => {
+            if (active) loadHistory();
+        });
 
-  async function loadHistory(event) {
-    event.preventDefault();
-    setError("");
-    try {
-      const response = await api.get(`/api/v1/messages/${encodeURIComponent(recipientId)}`);
-      setMessages(response.data.messages || []);
-    } catch (requestError) {
-      setError(requestError.response?.data?.message || "Unable to load message history.");
+        return () => {
+            active = false;
+            socket.disconnect();
+            socketRef.current = null;
+        };
+    }, [loadHistory]);
+
+    async function sendMessage(text) {
+        setSending(true);
+        setError("");
+        try {
+            const response = await api.post("/api/v1/messages/conversation", {
+                text,
+                clientMessageId: crypto.randomUUID()
+            });
+            setMessages((current) => mergeMessages(current, [response.data.message]));
+        } catch (requestError) {
+            setError(requestError.response?.data?.message || "Unable to send your message. Please try again.");
+            throw requestError;
+        } finally {
+            setSending(false);
+        }
     }
-  }
 
-  function sendMessage(event) {
-    event.preventDefault();
-    socketRef.current?.emit("send_message", { recipientId, text: message }, (result) => {
-      if (result?.success) setMessage("");
-      else setError(result?.message || "Unable to send message.");
-    });
-  }
-
-  return (
-    <>
-      <PageCss href="/css/style.css" />
-      <PageCss href="/css/dashboard.css" />
-      <main className="main-content">
-        <header className="topbar">
-          <h1>Student Chat</h1>
-          <p>Connection: {connected ? "Online" : "Offline"}</p>
-        </header>
-        {error && <p role="alert">{error}</p>}
-        <section className="course-card">
-          <form onSubmit={loadHistory}>
-            <label htmlFor="chatRecipient">Recipient user ID</label>
-            <input id="chatRecipient" value={recipientId} onChange={(event) => setRecipientId(event.target.value)} required />
-            <button type="submit">Load conversation</button>
-          </form>
-          <div aria-live="polite">
-            {messages.map((item) => (
-              <p key={item._id}>
-                <strong>{String(item.sender) === user?.id ? "You" : "Student"}:</strong> {item.text}
-              </p>
-            ))}
-          </div>
-          <form onSubmit={sendMessage}>
-            <label htmlFor="chatMessage">Message</label>
-            <input id="chatMessage" value={message} onChange={(event) => setMessage(event.target.value)} maxLength={2000} required />
-            <button type="submit" disabled={!connected || !recipientId.trim()}>Send</button>
-          </form>
-        </section>
-      </main>
-    </>
-  );
+    return (
+        <>
+            <PageCss href="/css/style.css" />
+            <PageCss href="/css/dashboard.css" />
+            <div className="container">
+                <StudentSidebar />
+                <main className="main-content">
+                    <header className="topbar chat-page-heading">
+                        <div>
+                            <h1>Chat with Admin</h1>
+                            <p>Get help directly from the SCMS administrator.</p>
+                        </div>
+                        <Link className="chat-back-link" to="/student-dashboard">Back to dashboard</Link>
+                    </header>
+                    <ChatThread
+                        contactName="Administrator"
+                        currentRole="student"
+                        messages={messages}
+                        loading={loading}
+                        sending={sending}
+                        connected={connected}
+                        error={error}
+                        onSend={sendMessage}
+                    />
+                </main>
+            </div>
+        </>
+    );
 };
 
 export default Chat;

@@ -67,7 +67,7 @@ erDiagram
 - `enrollments`: student/course references, status (`active`, `completed`, or `withdrawn`), enrollment date, and timestamps. Unique compound index on `{ student: 1, course: 1 }`; withdrawn records are reactivated instead of duplicated.
 - `learningprogress`: student/course references, completed and total lesson counts, calculated percentage, and timestamps. Unique compound index on `{ student: 1, course: 1 }`.
 - `notifications`: recipient reference, message (maximum 500 characters), read state, and timestamps. Index on `{ recipient: 1, createdAt: -1 }`.
-- `messages`: sender and recipient references, text (maximum 2,000 characters), and timestamps. Index on `{ sender: 1, recipient: 1, createdAt: -1 }`.
+- `messages`: sender and recipient references, text (maximum 2,000 characters), optional client idempotency UUID, and timestamps. Index on `{ sender: 1, recipient: 1, createdAt: -1 }` and a unique partial index on `{ sender: 1, recipient: 1, clientMessageId: 1 }`.
 - `certificates`: student/course references, unique certificate code, issue date, and timestamps. Unique compound index on `{ student: 1, course: 1 }`; generated once when a student completes an enrolled course.
 
 MongoDB creates `_id` values for every document. Account and course password/role authorization is checked against the current database record on authenticated HTTP and WebSocket requests.

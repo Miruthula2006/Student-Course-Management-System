@@ -95,6 +95,8 @@ const Register = () => {
                 name="fullName"
                 placeholder="Enter your full name"
                 autoComplete="name"
+                maxLength={100}
+                minLength={2}
                 value={form.fullName}
                 onChange={handleChange}
                 required
@@ -108,6 +110,9 @@ const Register = () => {
                 id="registerNumber"
                 name="registerNumber"
                 placeholder="Enter your register number"
+                maxLength={30}
+                pattern="[A-Za-z0-9][A-Za-z0-9._/-]*"
+                title="Use letters, numbers, periods, underscores, slashes, or hyphens."
                 value={form.registerNumber}
                 onChange={handleChange}
                 required
@@ -122,6 +127,7 @@ const Register = () => {
                 name="registerEmail"
                 placeholder="Enter your email"
                 autoComplete="email"
+                maxLength={254}
                 value={form.registerEmail}
                 onChange={handleChange}
                 required
@@ -136,6 +142,8 @@ const Register = () => {
                 name="phone"
                 placeholder="Enter your phone number"
                 autoComplete="tel"
+                pattern="[+]?[0-9]{10,15}"
+                title="Enter 10 to 15 digits, optionally prefixed by +."
                 value={form.phone}
                 onChange={handleChange}
                 required
@@ -191,6 +199,8 @@ const Register = () => {
                 name="registerPassword"
                 placeholder="Create a password"
                 autoComplete="new-password"
+                minLength={12}
+                maxLength={72}
                 value={form.registerPassword}
                 onChange={handleChange}
                 required
@@ -205,6 +215,8 @@ const Register = () => {
                 name="confirmPassword"
                 placeholder="Confirm your password"
                 autoComplete="new-password"
+                minLength={12}
+                maxLength={72}
                 value={form.confirmPassword}
                 onChange={handleChange}
                 required
